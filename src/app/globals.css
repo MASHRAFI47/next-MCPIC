@@ -8,6 +8,10 @@
   border-color: #122e2a;
 }
 
+html {
+  color-scheme: dark;
+}
+
 html,
 body {
   overflow-x: hidden;
@@ -72,33 +76,4 @@ p {
   100% {
     transform: translateX(-50%);
   }
-}
-
-.achievement-swiper {
-  width: 100%;
-  padding-top: 50px;
-  padding-bottom: 50px;
-}
-
-.achievement-slide {
-  background-position: center;
-  background-size: cover;
-  width: 300px !important;
-  height: 300px !important;
-}
-
-.achievement-slide img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 0.75rem;
-}
-
-.swiper-pagination-bullet {
-  background-color: #1c9e92 !important;
-}
-
-.swiper-pagination-bullet-active {
-  background-color: #30c3b6 !important;
 }

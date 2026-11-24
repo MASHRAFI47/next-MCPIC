@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -20,6 +21,7 @@ const NAV_LINKS = [
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const [mobileOpen, setMobileOpen] = useState(false);
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -33,6 +35,7 @@ export default function Header() {
   const recruitmentOpen = Boolean(recruitment?.enabled);
 
   const handleApplyForExecutive = () => {
+    setMobileOpen(false);
     if (!user) {
       router.push("/login?callbackUrl=/apply-for-executive");
       return;
@@ -44,77 +47,65 @@ export default function Header() {
     router.push("/apply-for-executive");
   };
 
-  const renderLinks = (isMobile = false) => (
-    <>
-      {NAV_LINKS.map((item) => {
-        const isActive =
-          item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-        return (
-          <li key={item.href}>
-            <Link
-              href={item.href}
-              className={
-                isActive
-                  ? "!bg-[#0c1d1b] text-[#e8f5f3] font-semibold"
-                  : "text-[#8aada9] hover:text-[#e8f5f3]"
-              }
-            >
-              {item.label}
-            </Link>
-          </li>
-        );
-      })}
-      {isMobile && user && recruitmentOpen && (
-        <li className="mt-2">
+  return (
+    <header className="bg-[#07100e]/95 backdrop-blur-md border-b border-[#0f2422] sticky top-0 z-50">
+      <div className="navbar container mx-auto px-4">
+        <div className="navbar-start gap-2">
           <button
             type="button"
-            onClick={handleApplyForExecutive}
-            className="text-sm font-semibold py-2 rounded-2xl px-4 border border-[#30c4b6] bg-[#30c4b6] text-[#080f0e] hover:bg-[#1c9e92]"
+            aria-label="Toggle navigation menu"
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((prev) => !prev)}
+            className="btn btn-ghost btn-sm lg:hidden text-[#e8f5f3]"
           >
-            Apply For Executives
-          </button>
-        </li>
-      )}
-    </>
-  );
-
-  return (
-    <header className="bg-[#07100e] border-b-2 border-[#0f2422] sticky top-0 z-50">
-      <div className="navbar container mx-auto">
-        <div className="navbar-start">
-          <div className="dropdown z-[1000]">
-            <div tabIndex={0} role="button" aria-label="Open navigation menu" className="btn btn-ghost lg:hidden">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-[#e8f5f3]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
-              </svg>
-            </div>
-            <ul
-              tabIndex={0}
-              className="bg-[#0b1514] border border-[#122e2a] menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow rounded-box w-56"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              {renderLinks(true)}
-            </ul>
-          </div>
-          <Link href="/" className="flex items-center gap-2">
+              {mobileOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h10m-10 6h16" />
+              )}
+            </svg>
+          </button>
+
+          <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
             <Image
               src="/mcpic-logo.png"
-              width={56}
-              height={56}
+              width={52}
+              height={52}
               priority
-              className="w-14 h-14 object-contain"
+              className="w-12 h-12 object-contain"
               alt="MCPIC Logo"
             />
           </Link>
         </div>
 
         <div className="navbar-center hidden lg:flex">
-          <ul className="menu menu-horizontal px-1 gap-2">{renderLinks(false)}</ul>
+          <ul className="menu menu-horizontal px-1 gap-1.5">
+            {NAV_LINKS.map((item) => {
+              const isActive =
+                item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={
+                      isActive
+                        ? "!bg-[#0c1d1b] text-[#30c4b6] font-semibold"
+                        : "text-[#8aada9] hover:text-[#e8f5f3]"
+                    }
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </div>
 
         <div className="navbar-end gap-3">
@@ -178,6 +169,44 @@ export default function Header() {
           )}
         </div>
       </div>
+
+      {/* Controlled Mobile Navigation Drawer */}
+      {mobileOpen && (
+        <nav className="lg:hidden bg-[#0b1514] border-t border-[#122e2a] px-4 py-3">
+          <ul className="menu menu-sm space-y-1">
+            {NAV_LINKS.map((item) => {
+              const isActive =
+                item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={
+                      isActive
+                        ? "!bg-[#0c1d1b] text-[#30c4b6] font-semibold"
+                        : "text-[#8aada9] hover:text-[#e8f5f3]"
+                    }
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+            {user && recruitmentOpen && (
+              <li className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleApplyForExecutive}
+                  className="text-sm font-semibold py-2 rounded-2xl px-4 border border-[#30c4b6] bg-[#30c4b6] text-[#080f0e] hover:bg-[#1c9e92]"
+                >
+                  Apply For Executives
+                </button>
+              </li>
+            )}
+          </ul>
+        </nav>
+      )}
     </header>
   );
 }

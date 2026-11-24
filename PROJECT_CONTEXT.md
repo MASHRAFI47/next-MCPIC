@@ -62,6 +62,7 @@
 - [x] Built all 30 Next.js API route handlers (`src/app/api/**`) with CSRF + CORS + rate limiting + server-side RBAC + RLS.
 - [x] Built shared UI shell, homepage sections, all public & auth pages, and all member/admin dashboard pages using Next.js `<Image />` everywhere (`src/components/**`, `src/app/**`).
 - [x] Fixed SSR Login spinner flash (hydrated `getServerSession` in `src/app/layout.tsx` -> `<SessionProvider session={session}>`) and navigation latency (moved public routes into shared `src/app/(public)/layout.tsx` + `loading.tsx`, enabled `experimental.optimizePackageImports` + `next dev --turbo`, dynamic-imported `lottie-react` and `Achievements`, throttled JWT DB revalidation to 30s, refreshed AOS on route changes).
+- [x] Redesigned landing page `Achievements` section (replaced dated Swiper coverflow with a 7-item Bento Gallery + keyboard-accessible Lightbox Modal), redesigned `Posts` page (search bar, featured latest post card, 2-column editorial grid, Full Post Reader Modal, modern community sidebar), and polished UI across `Header` (controlled mobile menu), `RecentEventCard` (no-wrap dates, hover zoom, removed fragile AOS on async cards), and `globals.css` (`color-scheme: dark`).
 
 ### Pending Tasks
 - [ ] **Host-environment runtime verification** (must be run in host terminal outside snap confinement):

@@ -13,17 +13,13 @@ function safeFormatDate(value: string): string {
 
 export default function RecentEventCard({ event }: { event: EventRecord }) {
   const preview =
-    event.description.length > 75
-      ? `${event.description.slice(0, 75)}...`
+    event.description.length > 85
+      ? `${event.description.slice(0, 85)}...`
       : event.description;
 
   return (
-    <Link href={`/events/${encodeURIComponent(event.slug)}`} className="block h-full">
-      <section
-        className="card bg-[#0c1917] border border-[#122e2a] hover:border-[#30c4b6]/60 shadow-sm h-[25rem] overflow-hidden transition-colors"
-        data-aos="flip-left"
-        data-aos-duration="900"
-      >
+    <Link href={`/events/${encodeURIComponent(event.slug)}`} className="block h-full group">
+      <section className="card bg-[#0c1917] border border-[#122e2a] hover:border-[#30c4b6]/60 shadow-sm h-[25rem] overflow-hidden transition-colors">
         <figure className="relative h-[52%] w-full overflow-hidden">
           <Image
             src={event.image_url}
@@ -31,7 +27,7 @@ export default function RecentEventCard({ event }: { event: EventRecord }) {
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
             unoptimized={event.image_url.startsWith("/api/uploads/")}
-            className="object-cover"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </figure>
         <div className="card-body h-[48%] p-5 flex flex-col justify-between">
@@ -42,12 +38,12 @@ export default function RecentEventCard({ event }: { event: EventRecord }) {
             <p className="text-sm mt-1 line-clamp-2">{preview}</p>
           </div>
 
-          <div className="flex items-center gap-2 pt-2">
-            <span className="bg-[#102220] text-[#2dbeb1] border border-[#17403b] rounded-2xl text-xs px-3 py-1">
+          <div className="flex items-center gap-1.5 pt-2 flex-nowrap">
+            <span className="bg-[#102220] text-[#2dbeb1] border border-[#17403b] rounded-2xl text-[11px] px-2.5 py-1 whitespace-nowrap">
               {safeFormatDate(event.start_date)}
             </span>
-            <MdArrowRightAlt className="text-[#89aca8]" />
-            <span className="bg-[#102220] text-[#2dbeb1] border border-[#17403b] rounded-2xl text-xs px-3 py-1">
+            <MdArrowRightAlt className="text-[#89aca8] shrink-0" />
+            <span className="bg-[#102220] text-[#2dbeb1] border border-[#17403b] rounded-2xl text-[11px] px-2.5 py-1 whitespace-nowrap">
               {safeFormatDate(event.end_date)}
             </span>
           </div>
