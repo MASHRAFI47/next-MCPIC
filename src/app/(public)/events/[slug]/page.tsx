@@ -4,7 +4,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { GoHorizontalRule } from "react-icons/go";
-import PublicShell from "@/components/PublicShell";
 import Title from "@/components/Title";
 import SegmentCard from "@/components/Cards/SegmentCard";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -28,8 +27,7 @@ export default function EventSegmentsPage() {
   });
 
   return (
-    <PublicShell>
-      <section className="min-h-screen hero-grid py-12 px-6 md:px-10 lg:px-4">
+    <section className="min-h-screen hero-grid py-12 px-6 md:px-10 lg:px-4">
         <div className="container mx-auto">
           {isLoading ? (
             <LoadingSpinner />
@@ -66,6 +64,5 @@ export default function EventSegmentsPage() {
           )}
         </div>
       </section>
-    </PublicShell>
   );
 }

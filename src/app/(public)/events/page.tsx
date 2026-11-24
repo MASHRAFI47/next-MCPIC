@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { GoHorizontalRule } from "react-icons/go";
-import PublicShell from "@/components/PublicShell";
 import Title from "@/components/Title";
 import RecentEventCard from "@/components/Cards/RecentEventCard";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -16,8 +15,7 @@ export default function EventsPage() {
   });
 
   return (
-    <PublicShell>
-      <section className="min-h-screen px-6 md:px-10 lg:px-4 py-12 border-y-2 border-[#112927] hero-grid">
+    <section className="min-h-screen px-6 md:px-10 lg:px-4 py-12 border-y-2 border-[#112927] hero-grid">
         <div className="container mx-auto">
           <div className="flex flex-col gap-3" data-aos="slide-down">
             <p className="tags text-[11px] pt-2 flex items-center font-semibold tracking-widest gap-2">
@@ -45,6 +43,5 @@ export default function EventsPage() {
           )}
         </div>
       </section>
-    </PublicShell>
   );
 }

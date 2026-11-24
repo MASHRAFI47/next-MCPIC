@@ -20,13 +20,14 @@ const NAV_LINKS = [
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const user = session?.user;
 
   const { data: recruitment } = useQuery({
     queryKey: ["recruitment-status"],
+    enabled: Boolean(user),
     queryFn: () => apiFetch<{ enabled: boolean }>("/api/settings/recruitment"),
-    staleTime: 30_000,
+    staleTime: 60_000,
   });
 
   const recruitmentOpen = Boolean(recruitment?.enabled);
@@ -117,9 +118,7 @@ export default function Header() {
         </div>
 
         <div className="navbar-end gap-3">
-          {status === "loading" ? (
-            <span className="loading loading-spinner loading-sm text-[#30c4b6]" />
-          ) : user ? (
+          {user ? (
             <>
               {recruitmentOpen && (
                 <button

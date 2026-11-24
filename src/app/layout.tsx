@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { getServerSession } from "next-auth";
 import { Bebas_Neue, IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
 import "aos/dist/aos.css";
 import "./globals.css";
 import Providers from "@/components/Providers";
+import { authOptions } from "@/lib/auth";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -33,11 +35,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions).catch(() => null);
+
   return (
     <html
       lang="en"
@@ -45,7 +49,7 @@ export default function RootLayout({
       className={`${bebasNeue.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable}`}
     >
       <body className="min-h-screen bg-[#080f0e] text-[#e8f5f3] font-sans antialiased">
-        <Providers>{children}</Providers>
+        <Providers session={session}>{children}</Providers>
       </body>
     </html>
   );

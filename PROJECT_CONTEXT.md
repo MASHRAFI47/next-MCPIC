@@ -61,6 +61,7 @@
 - [x] Built hardened security, validation, auth, MFA, and Edge middleware layer (`src/lib/**`, `src/middleware.ts`), including HMAC-signed CSPRNG CSRF tokens (`SameSite=Strict`, `Secure` in prod, `Path=/`) and strict parsed-origin CORS.
 - [x] Built all 30 Next.js API route handlers (`src/app/api/**`) with CSRF + CORS + rate limiting + server-side RBAC + RLS.
 - [x] Built shared UI shell, homepage sections, all public & auth pages, and all member/admin dashboard pages using Next.js `<Image />` everywhere (`src/components/**`, `src/app/**`).
+- [x] Fixed SSR Login spinner flash (hydrated `getServerSession` in `src/app/layout.tsx` -> `<SessionProvider session={session}>`) and navigation latency (moved public routes into shared `src/app/(public)/layout.tsx` + `loading.tsx`, enabled `experimental.optimizePackageImports` + `next dev --turbo`, dynamic-imported `lottie-react` and `Achievements`, throttled JWT DB revalidation to 30s, refreshed AOS on route changes).
 
 ### Pending Tasks
 - [ ] **Host-environment runtime verification** (must be run in host terminal outside snap confinement):

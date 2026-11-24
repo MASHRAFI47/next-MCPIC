@@ -38,6 +38,20 @@ const securityHeaders = [
 const nextConfig = {
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
+  experimental: {
+    optimizePackageImports: [
+      "react-icons",
+      "react-icons/fa",
+      "react-icons/fa6",
+      "react-icons/md",
+      "react-icons/go",
+      "react-icons/gr",
+      "react-icons/im",
+      "react-icons/cg",
+      "date-fns",
+      "swiper",
+    ],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [

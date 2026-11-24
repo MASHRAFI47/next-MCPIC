@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { format, isValid } from "date-fns";
 import { GoHorizontalRule } from "react-icons/go";
-import PublicShell from "@/components/PublicShell";
 import Title from "@/components/Title";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { apiFetch } from "@/lib/api-client";
@@ -29,8 +28,7 @@ export default function SegmentDetailsPage() {
   });
 
   return (
-    <PublicShell>
-      <section className="min-h-screen hero-grid py-12 px-6 md:px-10 lg:px-4">
+    <section className="min-h-screen hero-grid py-12 px-6 md:px-10 lg:px-4">
         <div className="container mx-auto">
           {isLoading ? (
             <LoadingSpinner />
@@ -110,6 +108,5 @@ export default function SegmentDetailsPage() {
           )}
         </div>
       </section>
-    </PublicShell>
   );
 }

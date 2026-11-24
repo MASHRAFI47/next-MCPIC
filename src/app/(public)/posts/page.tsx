@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { format, isValid } from "date-fns";
 import { GoHorizontalRule } from "react-icons/go";
-import PublicShell from "@/components/PublicShell";
 import Title from "@/components/Title";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { apiFetch } from "@/lib/api-client";
@@ -32,8 +31,7 @@ export default function PostsPage() {
   };
 
   return (
-    <PublicShell>
-      <section className="min-h-screen px-6 md:px-10 lg:px-4 py-12 hero-grid">
+    <section className="min-h-screen px-6 md:px-10 lg:px-4 py-12 hero-grid">
         <div className="container mx-auto">
           <div className="flex flex-col gap-3">
             <p className="tags text-[11px] pt-2 flex items-center font-semibold tracking-widest gap-2">
@@ -146,6 +144,5 @@ export default function PostsPage() {
           )}
         </div>
       </section>
-    </PublicShell>
   );
 }

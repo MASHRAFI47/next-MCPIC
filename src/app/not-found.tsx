@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import Lottie from "lottie-react";
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 export default function NotFound() {
   const [animationData, setAnimationData] = useState<object | null>(null);

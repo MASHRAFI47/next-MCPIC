@@ -1,13 +1,14 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import Lottie from "lottie-react";
 import toast from "react-hot-toast";
 import { GoHorizontalRule } from "react-icons/go";
-import PublicShell from "@/components/PublicShell";
 import Title from "@/components/Title";
 import { apiFetch } from "@/lib/api-client";
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 interface ContactFormValues {
   name: string;
@@ -50,8 +51,7 @@ export default function ContactPage() {
   };
 
   return (
-    <PublicShell>
-      <section className="px-6 md:px-10 lg:px-4 py-20 hero-grid min-h-screen">
+    <section className="px-6 md:px-10 lg:px-4 py-20 hero-grid min-h-screen">
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 items-center gap-12">
           <div data-aos="fade-right">
             <div className="flex flex-col gap-3">
@@ -141,6 +141,5 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-    </PublicShell>
   );
 }

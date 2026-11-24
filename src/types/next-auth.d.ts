@@ -41,6 +41,7 @@ declare module "next-auth/jwt" {
     emailVerified: boolean;
     mfaEnabled: boolean;
     tokenVersion: number;
+    lastCheckedAt?: number;
     invalidated?: boolean;
   }
 }

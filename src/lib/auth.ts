@@ -163,7 +163,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -174,13 +174,19 @@ export const authOptions: NextAuthOptions = {
         token.emailVerified = user.emailVerified;
         token.mfaEnabled = user.mfaEnabled;
         token.tokenVersion = user.tokenVersion;
+        token.lastCheckedAt = Date.now();
         token.invalidated = false;
         return token;
       }
 
-      // Periodically/live re-check DB so role promotions, demotions, password changes,
-      // and MFA toggles take effect immediately server-side.
-      if (token.id) {
+      // Throttle DB session revalidation to every 30s (or immediately on explicit update)
+      // so page navigation stays fast while role/revocation changes take effect promptly.
+      const shouldRevalidate =
+        trigger === "update" ||
+        !token.lastCheckedAt ||
+        Date.now() - token.lastCheckedAt > 30_000;
+
+      if (token.id && shouldRevalidate) {
         try {
           const fresh = await withDbContext({ role: "system" }, async (client) => {
             const res = await client.query<{
@@ -210,6 +216,7 @@ export const authOptions: NextAuthOptions = {
           token.designation = fresh.designation;
           token.emailVerified = Boolean(fresh.email_verified_at);
           token.mfaEnabled = fresh.mfa_enabled;
+          token.lastCheckedAt = Date.now();
         } catch (err) {
           logger.error("Failed to refresh JWT session from DB", { error: err });
         }

@@ -7,7 +7,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { CgSpinnerTwoAlt } from "react-icons/cg";
-import PublicShell from "@/components/PublicShell";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { apiFetch } from "@/lib/api-client";
 
@@ -67,18 +66,13 @@ export default function ApplyForExecutivePage() {
   };
 
   if (status === "loading" || loadingSwitch) {
-    return (
-      <PublicShell>
-        <LoadingSpinner />
-      </PublicShell>
-    );
+    return <LoadingSpinner />;
   }
 
   const user = session?.user;
 
   return (
-    <PublicShell>
-      <div className="hero-grid min-h-screen py-16 px-4">
+    <div className="hero-grid min-h-screen py-16 px-4">
         <div className="container mx-auto max-w-2xl">
           {!recruitment?.enabled ? (
             <div className="card bg-[#0b1514] border border-[#122e2a] p-8 text-center space-y-4">
@@ -265,6 +259,6 @@ export default function ApplyForExecutivePage() {
           )}
         </div>
       </div>
-    </PublicShell>
+    </div>
   );
 }
