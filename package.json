@@ -1,0 +1,53 @@
+{
+  "name": "next-mcpic",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "db:setup": "node scripts/db-setup.mjs",
+    "db:seed": "node scripts/db-seed.mjs"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.62.7",
+    "aos": "^2.3.4",
+    "bcryptjs": "^2.4.3",
+    "date-fns": "^3.6.0",
+    "lottie-react": "^2.4.0",
+    "next": "^14.2.28",
+    "next-auth": "^4.24.11",
+    "nodemailer": "^7.0.7",
+    "pg": "^8.13.1",
+    "qrcode": "^1.5.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.54.2",
+    "react-hot-toast": "^2.4.1",
+    "react-icons": "^5.4.0",
+    "sharp": "^0.33.5",
+    "sweetalert2": "^11.15.3",
+    "swiper": "^11.1.15",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/aos": "^3.0.7",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.17.10",
+    "@types/nodemailer": "^6.4.17",
+    "@types/pg": "^8.11.10",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "autoprefixer": "^10.4.20",
+    "daisyui": "^4.12.23",
+    "dotenv": "^16.4.7",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.28",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2"
+  }
+}
