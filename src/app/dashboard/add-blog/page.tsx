@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { CgSpinnerTwoAlt } from "react-icons/cg";
 import { apiFetch, uploadImage } from "@/lib/api-client";
 
 interface AddBlogValues {
@@ -104,7 +103,7 @@ export default function AddBlogPage() {
             disabled={loading}
             className="btn mt-4 border-[#30c4b6] bg-[#30c4b6] text-[#080f0e] hover:bg-[#1c9e92]"
           >
-            Publish Blog {loading && <CgSpinnerTwoAlt className="animate-spin" />}
+            {loading ? "Publishing..." : "Publish Blog"}
           </button>
         </form>
       </div>

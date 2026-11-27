@@ -45,7 +45,8 @@ export async function POST(req: Request) {
     });
 
     const { nextAuthUrl, isProd } = getEnv();
-    const verifyLink = `${nextAuthUrl}/verify-email?token=${encodeURIComponent(rawToken)}`;
+    const verifyPath = `/verify-email?token=${encodeURIComponent(rawToken)}`;
+    const verifyLink = `${nextAuthUrl}${verifyPath}`;
     const mailResult = await sendMail({
       to: user.email,
       subject: "Verify your MCPIC account",
@@ -54,7 +55,7 @@ export async function POST(req: Request) {
 
     return jsonResponse(req, {
       message: "Verification email sent.",
-      ...(!isProd && !mailResult.delivered ? { devVerifyUrl: verifyLink } : {}),
+      ...(!isProd && !mailResult.delivered ? { devVerifyUrl: verifyPath } : {}),
     });
   } catch (err) {
     logger.error("Failed to send verification email", { error: err });

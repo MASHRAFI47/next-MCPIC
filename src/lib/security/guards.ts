@@ -47,7 +47,7 @@ export async function guardRequest(
   options: GuardOptions = {}
 ): Promise<GuardSuccess | GuardFailure> {
   const origin = req.headers.get("origin");
-  if (origin && !isAllowedOrigin(origin)) {
+  if (origin && !isAllowedOrigin(origin, req)) {
     return {
       ok: false,
       response: NextResponse.json({ error: "Origin not allowed" }, { status: 403 }),

@@ -7,7 +7,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { CardsGridSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 import type { SegmentRecord } from "@/types/models";
 
@@ -48,7 +48,14 @@ export default function AllEventSegmentsPage() {
     }
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="h-10 w-56 rounded-lg bg-[#132c28] animate-pulse" />
+        <CardsGridSkeleton count={3} cols="lg:grid-cols-3" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -84,7 +91,13 @@ export default function AllEventSegmentsPage() {
               <div className="card-body">
                 <h2 className="card-title text-2xl text-[#e8f5f3]">{segment.name}</h2>
                 <p className="text-sm line-clamp-2">{segment.description}</p>
-                <div className="card-actions justify-end pt-2">
+                <div className="card-actions justify-end pt-2 flex-wrap">
+                  <Link
+                    href={`/dashboard/segment-registrations/${segment.id}`}
+                    className="btn btn-sm bg-[#0d1c1a] border-[#17403b] text-[#30c4b6] hover:border-[#30c4b6]"
+                  >
+                    Registrations
+                  </Link>
                   <Link
                     href={`/segments/${segment.id}`}
                     className="btn btn-sm border-[#30c4b6] bg-[#30c4b6] text-[#080f0e]"

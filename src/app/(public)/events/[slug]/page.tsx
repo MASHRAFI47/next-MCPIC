@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GoHorizontalRule } from "react-icons/go";
 import Title from "@/components/Title";
 import SegmentCard from "@/components/Cards/SegmentCard";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { CardsGridSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 import type { EventRecord, SegmentRecord } from "@/types/models";
 
@@ -30,7 +30,14 @@ export default function EventSegmentsPage() {
     <section className="min-h-screen hero-grid py-12 px-6 md:px-10 lg:px-4">
         <div className="container mx-auto">
           {isLoading ? (
-            <LoadingSpinner />
+            <div className="space-y-6 animate-pulse">
+              <div className="space-y-3">
+                <div className="h-3.5 w-32 rounded bg-[#132c28]" />
+                <div className="h-12 w-64 rounded bg-[#132c28]" />
+                <div className="h-4 w-96 max-w-full rounded bg-[#0f2422]" />
+              </div>
+              <CardsGridSkeleton count={4} cols="lg:grid-cols-4" />
+            </div>
           ) : error || !data ? (
             <div className="py-20 text-center">
               <h2 className="text-3xl text-[#e8f5f3]">Event Not Found</h2>

@@ -10,18 +10,24 @@ export async function GET(req: Request) {
 
   try {
     const stats = await withDbContext(guard.dbCtx, async (client) => {
-      const [users, events, blogs, forms] = await Promise.all([
-        client.query<{ count: string }>("SELECT COUNT(*)::text AS count FROM users"),
-        client.query<{ count: string }>("SELECT COUNT(*)::text AS count FROM events"),
-        client.query<{ count: string }>("SELECT COUNT(*)::text AS count FROM blogs"),
-        client.query<{ count: string }>("SELECT COUNT(*)::text AS count FROM executive_applications"),
-      ]);
-
+      const res = await client.query<{
+        users_count: number;
+        events_count: number;
+        blogs_count: number;
+        recruit_form_count: number;
+      }>(`
+        SELECT
+          (SELECT COUNT(*)::int FROM users) AS users_count,
+          (SELECT COUNT(*)::int FROM events) AS events_count,
+          (SELECT COUNT(*)::int FROM blogs) AS blogs_count,
+          (SELECT COUNT(*)::int FROM executive_applications) AS recruit_form_count
+      `);
+      const row = res.rows[0];
       return {
-        usersCount: Number(users.rows[0]?.count ?? 0),
-        eventsCount: Number(events.rows[0]?.count ?? 0),
-        blogsCount: Number(blogs.rows[0]?.count ?? 0),
-        recruitFormCount: Number(forms.rows[0]?.count ?? 0),
+        usersCount: row?.users_count ?? 0,
+        eventsCount: row?.events_count ?? 0,
+        blogsCount: row?.blogs_count ?? 0,
+        recruitFormCount: row?.recruit_form_count ?? 0,
       };
     });
 

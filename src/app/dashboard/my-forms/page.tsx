@@ -5,8 +5,7 @@ import Link from "next/link";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { CgSpinnerTwoAlt } from "react-icons/cg";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { FormCardSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 import type { ExecutiveApplicationRecord } from "@/types/models";
 
@@ -76,7 +75,7 @@ export default function MyFormsPage() {
     }
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <FormCardSkeleton fields={7} />;
 
   if (!form) {
     return (
@@ -201,7 +200,7 @@ export default function MyFormsPage() {
               disabled={saving}
               className="btn border-[#30c4b6] bg-[#30c4b6] text-[#080f0e] hover:bg-[#1c9e92]"
             >
-              Update Application {saving && <CgSpinnerTwoAlt className="animate-spin" />}
+              {saving ? "Updating..." : "Update Application"}
             </button>
           </div>
         </form>

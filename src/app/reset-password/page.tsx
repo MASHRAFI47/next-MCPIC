@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { FormCardSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 
 interface ResetValues {
@@ -109,7 +109,15 @@ function ResetPasswordInner() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen hero-grid flex items-center justify-center">
+          <div className="w-full max-w-sm">
+            <FormCardSkeleton fields={2} />
+          </div>
+        </div>
+      }
+    >
       <ResetPasswordInner />
     </Suspense>
   );

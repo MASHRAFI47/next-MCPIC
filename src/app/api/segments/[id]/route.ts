@@ -18,10 +18,15 @@ export async function GET(
   }
 
   try {
-    const segment = await withDbContext(guard.dbCtx, async (client) => {
+    // Use system context strictly to compute aggregate confirmed seat count without leaking PII
+    const segment = await withDbContext({ role: "system" }, async (client) => {
       const res = await client.query(
         `SELECT s.id, s.event_id, e.name AS event_name, e.slug AS event_slug,
-                s.name, s.description, s.image_url, s.start_date, s.end_date, s.created_at, s.updated_at
+                s.name, s.description, s.image_url, s.start_date, s.end_date,
+                s.registration_open, s.registration_deadline, s.max_participants,
+                s.is_team_based, s.max_team_size, s.created_at, s.updated_at,
+                (SELECT COUNT(*)::int FROM segment_registrations sr
+                 WHERE sr.segment_id = s.id AND sr.status = 'confirmed') AS confirmed_count
          FROM segments s
          JOIN events e ON e.id = s.event_id
          WHERE s.id = $1
@@ -74,16 +79,37 @@ export async function PUT(
     );
   }
 
-  const { eventId, name, description, imageUrl, startDate, endDate } = parsed.data;
+  const d = parsed.data;
+  const deadline = d.registrationDeadline instanceof Date ? d.registrationDeadline : null;
+  const maxParticipants = typeof d.maxParticipants === "number" ? d.maxParticipants : null;
+  const maxTeamSize = d.isTeamBased ? Math.max(2, d.maxTeamSize) : 1;
 
   try {
     const updated = await withDbContext(guard.dbCtx, async (client) => {
       const res = await client.query(
         `UPDATE segments
-         SET event_id = $1, name = $2, description = $3, image_url = $4, start_date = $5, end_date = $6
-         WHERE id = $7
-         RETURNING id, event_id, name, description, image_url, start_date, end_date, updated_at`,
-        [eventId, name, description, imageUrl, startDate, endDate, parsedId.data]
+         SET event_id = $1, name = $2, description = $3, image_url = $4,
+             start_date = $5, end_date = $6, registration_open = $7,
+             registration_deadline = $8, max_participants = $9,
+             is_team_based = $10, max_team_size = $11
+         WHERE id = $12
+         RETURNING id, event_id, name, description, image_url, start_date, end_date,
+                   registration_open, registration_deadline, max_participants,
+                   is_team_based, max_team_size, updated_at`,
+        [
+          d.eventId,
+          d.name,
+          d.description,
+          d.imageUrl,
+          d.startDate,
+          d.endDate,
+          d.registrationOpen,
+          deadline,
+          maxParticipants,
+          d.isTeamBased,
+          maxTeamSize,
+          parsedId.data,
+        ]
       );
       const row = res.rows[0];
       if (!row) return null;

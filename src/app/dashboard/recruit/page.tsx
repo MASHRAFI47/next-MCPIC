@@ -5,8 +5,7 @@ import Image from "next/image";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import { CgSpinnerTwoAlt } from "react-icons/cg";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { TablePageSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 import { DESIGNATIONS } from "@/lib/validators";
 import type { ExecutiveApplicationRecord } from "@/types/models";
@@ -81,7 +80,7 @@ export default function RecruitPage() {
     }
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <TablePageSkeleton rows={5} cols={3} />;
 
   const isOpen = Boolean(recruitment?.enabled);
 
@@ -104,13 +103,11 @@ export default function RecruitPage() {
           onClick={() => toggleRecruitment.mutate(!isOpen)}
           className={`btn btn-sm ${isOpen ? "btn-warning" : "btn-success text-white"}`}
         >
-          {toggleRecruitment.isPending ? (
-            <CgSpinnerTwoAlt className="animate-spin" />
-          ) : isOpen ? (
-            "Close Recruitment"
-          ) : (
-            "Open Recruitment"
-          )}
+          {toggleRecruitment.isPending
+            ? "Updating..."
+            : isOpen
+            ? "Close Recruitment"
+            : "Open Recruitment"}
         </button>
       </div>
 
@@ -251,11 +248,7 @@ export default function RecruitPage() {
               onClick={() => recruitMutation.mutate({ id: recruiting.id, desig: designation })}
               className="btn w-full border-[#30c4b6] bg-[#30c4b6] text-[#080f0e]"
             >
-              {recruitMutation.isPending ? (
-                <CgSpinnerTwoAlt className="animate-spin" />
-              ) : (
-                "Confirm Recruit"
-              )}
+              {recruitMutation.isPending ? "Recruiting..." : "Confirm Recruit"}
             </button>
           </div>
         </div>

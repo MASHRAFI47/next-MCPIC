@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GoHorizontalRule } from "react-icons/go";
 import Title from "@/components/Title";
 import RecentEventCard from "@/components/Cards/RecentEventCard";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { CardsGridSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 import type { EventRecord } from "@/types/models";
 
@@ -31,7 +31,7 @@ export default function EventsPage() {
           </div>
 
           {isLoading ? (
-            <LoadingSpinner />
+            <CardsGridSkeleton count={4} cols="lg:grid-cols-4" />
           ) : events.length === 0 ? (
             <p className="mt-12 text-[#89aca8]">No events uploaded yet.</p>
           ) : (

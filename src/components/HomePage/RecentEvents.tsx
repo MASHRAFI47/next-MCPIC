@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GoHorizontalRule } from "react-icons/go";
 import Title from "@/components/Title";
 import RecentEventCard from "@/components/Cards/RecentEventCard";
+import { CardsGridSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 import type { EventRecord } from "@/types/models";
 
@@ -25,9 +26,7 @@ export default function RecentEvents() {
         </div>
 
         {isLoading ? (
-          <div className="py-16 flex justify-center">
-            <span className="loading loading-spinner text-[#2dbeb1] w-10" />
-          </div>
+          <CardsGridSkeleton count={3} cols="lg:grid-cols-3" />
         ) : events.length === 0 ? (
           <p className="mt-10 text-sm text-[#89aca8]">No events published yet. Check back soon!</p>
         ) : (

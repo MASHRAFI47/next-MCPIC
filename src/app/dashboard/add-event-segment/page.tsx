@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { CgSpinnerTwoAlt } from "react-icons/cg";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { FormCardSkeleton } from "@/components/Skeletons";
 import { apiFetch, uploadImage } from "@/lib/api-client";
 import type { EventRecord } from "@/types/models";
 
@@ -15,6 +14,11 @@ interface AddSegmentValues {
   description: string;
   startDate: string;
   endDate: string;
+  registrationOpen: boolean;
+  registrationDeadline: string;
+  maxParticipants: string;
+  isTeamBased: boolean;
+  maxTeamSize: number;
   image: FileList;
 }
 
@@ -40,8 +44,15 @@ export default function AddEventSegmentPage() {
     defaultValues: {
       startDate: todayIsoDate(),
       endDate: todayIsoDate(),
+      registrationOpen: true,
+      registrationDeadline: "",
+      maxParticipants: "",
+      isTeamBased: false,
+      maxTeamSize: 3,
     },
   });
+
+  const isTeamBased = watch("isTeamBased");
 
   const onSubmit = async (values: AddSegmentValues) => {
     const file = values.image?.[0];
@@ -62,6 +73,13 @@ export default function AddEventSegmentPage() {
           imageUrl,
           startDate: new Date(`${values.startDate}T00:00:00.000Z`).toISOString(),
           endDate: new Date(`${values.endDate}T23:59:59.000Z`).toISOString(),
+          registrationOpen: Boolean(values.registrationOpen),
+          registrationDeadline: values.registrationDeadline
+            ? new Date(`${values.registrationDeadline}T23:59:59.000Z`).toISOString()
+            : null,
+          maxParticipants: values.maxParticipants ? Number(values.maxParticipants) : null,
+          isTeamBased: Boolean(values.isTeamBased),
+          maxTeamSize: values.isTeamBased ? Number(values.maxTeamSize) || 2 : 1,
         }),
       });
       toast.success("Event segment added successfully");
@@ -71,6 +89,11 @@ export default function AddEventSegmentPage() {
         description: "",
         startDate: todayIsoDate(),
         endDate: todayIsoDate(),
+        registrationOpen: true,
+        registrationDeadline: "",
+        maxParticipants: "",
+        isTeamBased: false,
+        maxTeamSize: 3,
       });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to add segment");
@@ -79,7 +102,7 @@ export default function AddEventSegmentPage() {
     }
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <FormCardSkeleton fields={7} />;
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -135,9 +158,6 @@ export default function AddEventSegmentPage() {
                 className="input input-bordered bg-[#0d1c1a] text-[#e8f5f3]"
                 {...register("startDate", { required: "Start date is required" })}
               />
-              {errors.startDate && (
-                <span className="text-red-500 text-xs">{errors.startDate.message}</span>
-              )}
             </div>
 
             <div className="form-control">
@@ -157,6 +177,73 @@ export default function AddEventSegmentPage() {
               />
               {errors.endDate && (
                 <span className="text-red-500 text-xs">{errors.endDate.message}</span>
+              )}
+            </div>
+          </div>
+
+          {/* Registration Configuration */}
+          <div className="rounded-xl bg-[#0d1c1a] border border-[#122e2a] p-4 space-y-3">
+            <span className="font-mono text-xs uppercase tracking-widest text-[#30c4b6]">
+              Online Registration Settings
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="label cursor-pointer justify-start gap-3">
+                <input
+                  type="checkbox"
+                  className="toggle toggle-sm toggle-accent"
+                  {...register("registrationOpen")}
+                />
+                <span className="label-text text-[#e8f5f3]">Registration Open</span>
+              </label>
+
+              <label className="label cursor-pointer justify-start gap-3">
+                <input
+                  type="checkbox"
+                  className="toggle toggle-sm toggle-accent"
+                  {...register("isTeamBased")}
+                />
+                <span className="label-text text-[#e8f5f3]">Team-Based Segment</span>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="form-control">
+                <label className="label py-1">
+                  <span className="label-text text-xs text-[#89aca8]">Deadline (optional)</span>
+                </label>
+                <input
+                  type="date"
+                  className="input input-sm input-bordered bg-[#080f0e] text-[#e8f5f3]"
+                  {...register("registrationDeadline")}
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label py-1">
+                  <span className="label-text text-xs text-[#89aca8]">Max Seats (optional)</span>
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  placeholder="Unlimited"
+                  className="input input-sm input-bordered bg-[#080f0e] text-[#e8f5f3]"
+                  {...register("maxParticipants")}
+                />
+              </div>
+
+              {isTeamBased && (
+                <div className="form-control">
+                  <label className="label py-1">
+                    <span className="label-text text-xs text-[#89aca8]">Max Team Size</span>
+                  </label>
+                  <input
+                    type="number"
+                    min={2}
+                    max={20}
+                    className="input input-sm input-bordered bg-[#080f0e] text-[#e8f5f3]"
+                    {...register("maxTeamSize")}
+                  />
+                </div>
               )}
             </div>
           </div>
@@ -181,7 +268,7 @@ export default function AddEventSegmentPage() {
               <span className="label-text text-[#89aca8] font-semibold">Description*</span>
             </label>
             <textarea
-              rows={7}
+              rows={6}
               placeholder="Write segment rules and details..."
               className="textarea textarea-bordered w-full bg-[#0d1c1a] text-[#e8f5f3]"
               {...register("description", { required: "Description is required" })}
@@ -197,7 +284,7 @@ export default function AddEventSegmentPage() {
               disabled={submitting}
               className="btn border-[#30c4b6] bg-[#30c4b6] text-[#080f0e] hover:bg-[#1c9e92]"
             >
-              Add Segment {submitting && <CgSpinnerTwoAlt className="animate-spin" />}
+              {submitting ? "Adding Segment..." : "Add Segment"}
             </button>
           </div>
         </form>

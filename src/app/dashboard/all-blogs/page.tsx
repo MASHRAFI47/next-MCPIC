@@ -8,7 +8,7 @@ import { FaRegEdit } from "react-icons/fa";
 import { FaRegTrashCan } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { TablePageSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 import type { BlogRecord } from "@/types/models";
 
@@ -47,7 +47,7 @@ export default function AllBlogsPage() {
     }
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <TablePageSkeleton rows={5} cols={4} />;
 
   return (
     <div className="space-y-6">

@@ -18,6 +18,10 @@ export default function Footer() {
           <br />
           Regular club activities since 2022
         </p>
+        <span className="mt-2 inline-flex items-center gap-2 rounded-full border border-[#17403b] bg-[#0f211e] px-3 py-1 font-mono text-[11px] tracking-wider text-[#30c4b6]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#30c4b6]" />
+          Currently in Version 2.0
+        </span>
       </aside>
 
       <nav>

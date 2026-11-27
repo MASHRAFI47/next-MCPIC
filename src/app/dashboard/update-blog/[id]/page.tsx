@@ -5,8 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { CgSpinnerTwoAlt } from "react-icons/cg";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { FormCardSkeleton } from "@/components/Skeletons";
 import { apiFetch, uploadImage } from "@/lib/api-client";
 import type { BlogRecord } from "@/types/models";
 
@@ -68,7 +67,7 @@ export default function UpdateBlogPage() {
     }
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <FormCardSkeleton fields={4} />;
   if (!blog) return <p className="text-red-400">Blog not found.</p>;
 
   return (
@@ -122,7 +121,7 @@ export default function UpdateBlogPage() {
             disabled={saving}
             className="btn mt-4 border-[#30c4b6] bg-[#30c4b6] text-[#080f0e] hover:bg-[#1c9e92]"
           >
-            Update Blog {saving && <CgSpinnerTwoAlt className="animate-spin" />}
+            {saving ? "Updating Blog..." : "Update Blog"}
           </button>
         </form>
       </div>

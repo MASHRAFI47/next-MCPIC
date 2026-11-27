@@ -8,10 +8,15 @@ const ADMIN_DASHBOARD_PREFIXES = [
   "/dashboard/all-event-segments",
   "/dashboard/add-event-segment",
   "/dashboard/update-event-segment",
+  "/dashboard/segment-registrations",
   "/dashboard/add-blog",
   "/dashboard/all-blogs",
   "/dashboard/update-blog",
   "/dashboard/recruit",
+  "/dashboard/messages",
+  "/dashboard/audit-logs",
+  "/dashboard/manage-executives",
+  "/dashboard/manage-achievements",
 ];
 
 function getAllowedOrigins(): string[] {
@@ -23,6 +28,21 @@ function getAllowedOrigins(): string[] {
     .filter((o) => o.length > 0 && o !== "*");
 }
 
+function isDevSameOriginLocalhost(origin: string, req: NextRequest): boolean {
+  if (process.env.NODE_ENV === "production") return false;
+  try {
+    const url = new URL(origin);
+    if (url.protocol !== "http:") return false;
+    if (url.hostname !== "localhost" && url.hostname !== "127.0.0.1") {
+      return false;
+    }
+    const hostHeader = (req.headers.get("host") || req.nextUrl.host).trim().toLowerCase();
+    return Boolean(hostHeader) && url.host.toLowerCase() === hostHeader;
+  } catch {
+    return false;
+  }
+}
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -32,7 +52,7 @@ export async function middleware(req: NextRequest) {
     if (origin) {
       const allowed = getAllowedOrigins();
       const normalized = origin.replace(/\/+$/, "");
-      if (!allowed.includes(normalized)) {
+      if (!allowed.includes(normalized) && !isDevSameOriginLocalhost(normalized, req)) {
         return NextResponse.json({ error: "CORS origin forbidden" }, { status: 403 });
       }
       if (req.method === "OPTIONS") {

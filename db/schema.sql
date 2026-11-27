@@ -238,6 +238,107 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 
 CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs (created_at DESC);
 
+-- ----------------------------------------------------------------------------
+-- Tier 1 Schema Extensions (Idempotent ALTERs + New Tables)
+-- ----------------------------------------------------------------------------
+
+-- 10. Blog slugs for shareable /posts/[slug] permalinks
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS slug TEXT;
+UPDATE blogs
+SET slug = LOWER(REGEXP_REPLACE(TRIM(title), '[^a-zA-Z0-9]+', '-', 'g')) || '-' || SUBSTRING(id::TEXT, 1, 6)
+WHERE slug IS NULL OR slug = '';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_blogs_slug ON blogs (slug);
+
+-- 11. Contact message workflow status (unread | read | resolved)
+ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'unread';
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'contact_messages_status_check'
+  ) THEN
+    ALTER TABLE contact_messages
+      ADD CONSTRAINT contact_messages_status_check
+      CHECK (status IN ('unread', 'read', 'resolved'));
+  END IF;
+END $$;
+
+-- 12. Segment registration settings
+ALTER TABLE segments ADD COLUMN IF NOT EXISTS registration_open BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE segments ADD COLUMN IF NOT EXISTS registration_deadline TIMESTAMPTZ;
+ALTER TABLE segments ADD COLUMN IF NOT EXISTS max_participants INTEGER;
+ALTER TABLE segments ADD COLUMN IF NOT EXISTS is_team_based BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE segments ADD COLUMN IF NOT EXISTS max_team_size INTEGER NOT NULL DEFAULT 1;
+
+-- 13. Segment Registrations
+CREATE TABLE IF NOT EXISTS segment_registrations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ticket_code TEXT NOT NULL UNIQUE,
+  segment_id UUID NOT NULL REFERENCES segments(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  participant_name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  institution TEXT NOT NULL,
+  class_grade TEXT NOT NULL,
+  team_name TEXT,
+  team_members TEXT,
+  status TEXT NOT NULL DEFAULT 'confirmed' CHECK (status IN ('confirmed', 'cancelled')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT seg_reg_email_lowercase CHECK (email = LOWER(email))
+);
+
+CREATE INDEX IF NOT EXISTS idx_seg_reg_segment_id ON segment_registrations (segment_id);
+CREATE INDEX IF NOT EXISTS idx_seg_reg_user_id ON segment_registrations (user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_seg_reg_unique_confirmed
+  ON segment_registrations (segment_id, email)
+  WHERE status = 'confirmed';
+
+DROP TRIGGER IF EXISTS trg_seg_reg_updated_at ON segment_registrations;
+CREATE TRIGGER trg_seg_reg_updated_at
+  BEFORE UPDATE ON segment_registrations
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- 14. Database-driven Executive Committee Members
+CREATE TABLE IF NOT EXISTS executive_members (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  panel_year TEXT NOT NULL,
+  name TEXT NOT NULL,
+  post TEXT NOT NULL,
+  image_url TEXT NOT NULL DEFAULT '/images/blank.webp',
+  display_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_exec_members_year_order
+  ON executive_members (panel_year DESC, display_order ASC, created_at ASC);
+
+DROP TRIGGER IF EXISTS trg_exec_members_updated_at ON executive_members;
+CREATE TRIGGER trg_exec_members_updated_at
+  BEFORE UPDATE ON executive_members
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- 15. Database-driven Achievements Gallery
+CREATE TABLE IF NOT EXISTS achievements (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  tag TEXT NOT NULL,
+  image_url TEXT NOT NULL,
+  year TEXT,
+  display_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_achievements_order
+  ON achievements (display_order ASC, created_at DESC);
+
+DROP TRIGGER IF EXISTS trg_achievements_updated_at ON achievements;
+CREATE TRIGGER trg_achievements_updated_at
+  BEFORE UPDATE ON achievements
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
 -- ============================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- Enforced at the PostgreSQL engine level for `mcpic_app`
@@ -349,7 +450,7 @@ DROP POLICY IF EXISTS verification_tokens_policy ON verification_tokens;
 CREATE POLICY verification_tokens_policy ON verification_tokens
   FOR ALL USING (app_is_system()) WITH CHECK (app_is_system());
 
--- Contact messages: anyone can submit via system/anonymous, only admins can read
+-- Contact messages: anyone can submit, only admins can read/update/delete
 DROP POLICY IF EXISTS contact_messages_insert_policy ON contact_messages;
 CREATE POLICY contact_messages_insert_policy ON contact_messages
   FOR INSERT WITH CHECK (true);
@@ -357,6 +458,14 @@ CREATE POLICY contact_messages_insert_policy ON contact_messages
 DROP POLICY IF EXISTS contact_messages_select_policy ON contact_messages;
 CREATE POLICY contact_messages_select_policy ON contact_messages
   FOR SELECT USING (app_is_admin());
+
+DROP POLICY IF EXISTS contact_messages_update_policy ON contact_messages;
+CREATE POLICY contact_messages_update_policy ON contact_messages
+  FOR UPDATE USING (app_is_admin()) WITH CHECK (app_is_admin());
+
+DROP POLICY IF EXISTS contact_messages_delete_policy ON contact_messages;
+CREATE POLICY contact_messages_delete_policy ON contact_messages
+  FOR DELETE USING (app_is_admin());
 
 -- Audit logs: append-only for authenticated/system, admin read only
 DROP POLICY IF EXISTS audit_logs_insert_policy ON audit_logs;
@@ -366,3 +475,50 @@ CREATE POLICY audit_logs_insert_policy ON audit_logs
 DROP POLICY IF EXISTS audit_logs_select_policy ON audit_logs;
 CREATE POLICY audit_logs_select_policy ON audit_logs
   FOR SELECT USING (app_is_admin());
+
+-- Segment registrations RLS: anyone can register (API validates deadline/capacity),
+-- owners see/cancel their own, admins manage all
+ALTER TABLE segment_registrations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE segment_registrations FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS seg_reg_insert_policy ON segment_registrations;
+CREATE POLICY seg_reg_insert_policy ON segment_registrations
+  FOR INSERT WITH CHECK (user_id IS NULL OR user_id = app_user_id() OR app_is_admin());
+
+DROP POLICY IF EXISTS seg_reg_select_policy ON segment_registrations;
+CREATE POLICY seg_reg_select_policy ON segment_registrations
+  FOR SELECT USING (app_is_admin() OR (app_user_id() IS NOT NULL AND user_id = app_user_id()));
+
+DROP POLICY IF EXISTS seg_reg_update_policy ON segment_registrations;
+CREATE POLICY seg_reg_update_policy ON segment_registrations
+  FOR UPDATE
+  USING (app_is_admin() OR (app_user_id() IS NOT NULL AND user_id = app_user_id()))
+  WITH CHECK (app_is_admin() OR (app_user_id() IS NOT NULL AND user_id = app_user_id()));
+
+DROP POLICY IF EXISTS seg_reg_delete_policy ON segment_registrations;
+CREATE POLICY seg_reg_delete_policy ON segment_registrations
+  FOR DELETE USING (app_is_admin() OR (app_user_id() IS NOT NULL AND user_id = app_user_id()));
+
+-- Executive members RLS: public read, admin write
+ALTER TABLE executive_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE executive_members FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS exec_members_select_policy ON executive_members;
+CREATE POLICY exec_members_select_policy ON executive_members
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS exec_members_write_policy ON executive_members;
+CREATE POLICY exec_members_write_policy ON executive_members
+  FOR ALL USING (app_is_admin()) WITH CHECK (app_is_admin());
+
+-- Achievements RLS: public read, admin write
+ALTER TABLE achievements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE achievements FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS achievements_select_policy ON achievements;
+CREATE POLICY achievements_select_policy ON achievements
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS achievements_write_policy ON achievements;
+CREATE POLICY achievements_write_policy ON achievements
+  FOR ALL USING (app_is_admin()) WITH CHECK (app_is_admin());

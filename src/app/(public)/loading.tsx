@@ -1,5 +1,5 @@
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { PageSkeleton } from "@/components/Skeletons";
 
 export default function PublicLoading() {
-  return <LoadingSpinner />;
+  return <PageSkeleton />;
 }

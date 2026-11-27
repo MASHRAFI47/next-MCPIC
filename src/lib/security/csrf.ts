@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 import { getEnv } from "../env";
+import { isAllowedOrigin } from "./cors";
 import { randomTokenHex, timingSafeEqualStr } from "./crypto";
 
 export const CSRF_COOKIE_NAME = "mcpic_csrf_token";
@@ -83,14 +84,13 @@ export function verifyCsrf(req: Request): { ok: true } | { ok: false; reason: st
     return { ok: false, reason: "Cross-site state-changing request blocked" };
   }
 
-  const { allowedOrigins } = getEnv();
   const origin = req.headers.get("origin");
   const referer = req.headers.get("referer");
 
   if (origin) {
     try {
       const parsedOrigin = new URL(origin).origin;
-      if (!allowedOrigins.includes(parsedOrigin)) {
+      if (!isAllowedOrigin(parsedOrigin, req)) {
         return { ok: false, reason: "Untrusted request origin" };
       }
     } catch {
@@ -99,7 +99,7 @@ export function verifyCsrf(req: Request): { ok: true } | { ok: false; reason: st
   } else if (referer) {
     try {
       const refOrigin = new URL(referer).origin;
-      if (!allowedOrigins.includes(refOrigin)) {
+      if (!isAllowedOrigin(refOrigin, req)) {
         return { ok: false, reason: "Untrusted request referer" };
       }
     } catch {

@@ -65,7 +65,8 @@ export async function POST(req: Request) {
 
     if (user) {
       const { nextAuthUrl, isProd } = getEnv();
-      const resetLink = `${nextAuthUrl}/reset-password?token=${encodeURIComponent(rawToken)}`;
+      const resetPath = `/reset-password?token=${encodeURIComponent(rawToken)}`;
+      const resetLink = `${nextAuthUrl}${resetPath}`;
       const mailResult = await sendMail({
         to: email,
         subject: "MCPIC Password Reset",
@@ -73,7 +74,7 @@ export async function POST(req: Request) {
       });
 
       if (!isProd && !mailResult.delivered) {
-        return jsonResponse(req, { message: genericMessage, devResetUrl: resetLink });
+        return jsonResponse(req, { message: genericMessage, devResetUrl: resetPath });
       }
     }
 

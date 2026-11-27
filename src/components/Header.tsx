@@ -120,8 +120,22 @@ export default function Header() {
                   Apply For Executives
                 </button>
               )}
-              <div className="dropdown dropdown-end z-[1000]">
-                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+              <div
+                className="dropdown dropdown-end z-[1000]"
+                onMouseEnter={() => {
+                  router.prefetch("/dashboard");
+                  router.prefetch("/dashboard/profile");
+                }}
+              >
+                <div
+                  tabIndex={0}
+                  role="button"
+                  onClick={() => {
+                    router.prefetch("/dashboard");
+                    router.prefetch("/dashboard/profile");
+                  }}
+                  className="btn btn-ghost btn-circle avatar"
+                >
                   <div className="w-10 h-10 rounded-full ring-1 ring-[#30c4b6]/50 relative overflow-hidden">
                     <Image
                       alt={user.name || "User avatar"}

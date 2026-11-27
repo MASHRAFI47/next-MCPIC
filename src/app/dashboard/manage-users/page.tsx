@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { TablePageSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 import { DESIGNATIONS } from "@/lib/validators";
 import type { UserRecord } from "@/types/models";
@@ -61,7 +61,7 @@ export default function ManageUsersPage() {
     }
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <TablePageSkeleton rows={6} cols={6} />;
 
   return (
     <div className="space-y-6">

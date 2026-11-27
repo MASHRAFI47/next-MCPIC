@@ -20,7 +20,7 @@ export async function GET(
   try {
     const blog = await withDbContext(guard.dbCtx, async (client) => {
       const res = await client.query(
-        `SELECT id, title, description, image_url, publisher_name, created_at, updated_at
+        `SELECT id, slug, title, description, image_url, publisher_name, created_at, updated_at
          FROM blogs WHERE id = $1 LIMIT 1`,
         [parsedId.data]
       );

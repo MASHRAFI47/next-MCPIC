@@ -6,8 +6,7 @@ import { useSession } from "next-auth/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { CgSpinnerTwoAlt } from "react-icons/cg";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { FormCardSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 
 interface ApplyFormValues {
@@ -66,7 +65,11 @@ export default function ApplyForExecutivePage() {
   };
 
   if (status === "loading" || loadingSwitch) {
-    return <LoadingSpinner />;
+    return (
+      <div className="hero-grid min-h-screen py-16 px-4">
+        <FormCardSkeleton fields={7} />
+      </div>
+    );
   }
 
   const user = session?.user;
@@ -250,7 +253,7 @@ export default function ApplyForExecutivePage() {
                       disabled={submitting}
                       className="text-sm font-semibold py-3 rounded-2xl px-5 border border-[#30c4b6] bg-[#30c4b6] text-[#080f0e] hover:bg-[#1c9e92] transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                     >
-                      Apply {submitting && <CgSpinnerTwoAlt className="animate-spin" />}
+                      {submitting ? "Submitting..." : "Apply"}
                     </button>
                   </div>
                 </form>

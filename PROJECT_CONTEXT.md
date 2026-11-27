@@ -62,15 +62,20 @@
 - [x] Built all 30 Next.js API route handlers (`src/app/api/**`) with CSRF + CORS + rate limiting + server-side RBAC + RLS.
 - [x] Built shared UI shell, homepage sections, all public & auth pages, and all member/admin dashboard pages using Next.js `<Image />` everywhere (`src/components/**`, `src/app/**`).
 - [x] Fixed SSR Login spinner flash (hydrated `getServerSession` in `src/app/layout.tsx` -> `<SessionProvider session={session}>`) and navigation latency (moved public routes into shared `src/app/(public)/layout.tsx` + `loading.tsx`, enabled `experimental.optimizePackageImports` + `next dev --turbo`, dynamic-imported `lottie-react` and `Achievements`, throttled JWT DB revalidation to 30s, refreshed AOS on route changes).
-- [x] Redesigned landing page `Achievements` section (replaced dated Swiper coverflow with a 7-item Bento Gallery + keyboard-accessible Lightbox Modal), redesigned `Posts` page (search bar, featured latest post card, 2-column editorial grid, Full Post Reader Modal, modern community sidebar), and polished UI across `Header` (controlled mobile menu), `RecentEventCard` (no-wrap dates, hover zoom, removed fragile AOS on async cards), and `globals.css` (`color-scheme: dark`).
+- [x] Redesigned landing page `Achievements` section (replaced dated Swiper coverflow with a 7-item Bento Gallery + keyboard-accessible Lightbox Modal + adjacent preloading & skeleton loader), redesigned `Posts` page (search bar, featured latest post card, 2-column editorial grid, Full Post Reader Modal, modern community sidebar), and polished UI across `Header`, `Footer` (v2.0 badge), `RecentEventCard`, and `globals.css`.
+- [x] Fixed slow `/dashboard` navigation (5–10s -> instant): replaced 8 heavy `react-icons/*` packs (including 15MB `react-icons/gi`) in `dashboard/layout.tsx` and `dashboard/page.tsx` with tiny zero-dep inline SVGs (`src/components/Icons.tsx`), converted `dashboard/page.tsx` to a Server Component with a single combined SQL query, added `src/app/dashboard/loading.tsx` skeleton, and added eager `router.prefetch` for `/dashboard` & `/dashboard/profile` on the profile avatar menu.
+- [x] Removed all loading spinners across the app and replaced them with tailored dark-teal skeleton loaders (`src/components/Skeletons.tsx`: `CardsGridSkeleton`, `PostsPageSkeleton`, `SegmentDetailsSkeleton`, `TablePageSkeleton`, `FormCardSkeleton`, `ProfilePageSkeleton`, `PageSkeleton`).
+- [x] Implemented all 5 **Tier 1** features:
+  1. **Event & Segment Online Registration + Sanitized CSV Export**: `segment_registrations` table + RLS, `segments` registration fields, `/api/segments/[id]/registrations` (+ `/export` with CSV formula-injection neutralization), `/api/registrations/me`, `/api/registrations/[id]`, live registration & ticket UI on `/segments/[id]`, admin `/dashboard/segment-registrations/[segmentId]`, and member `/dashboard/my-registrations`.
+  2. **Admin Contact Inbox**: `contact_messages.status` (`unread|read|resolved`) + RLS, `/api/admin/messages` + `/[id]`, `/dashboard/messages`.
+  3. **Security & Activity Audit Log Viewer**: `/api/admin/audit-logs`, `/dashboard/audit-logs`.
+  4. **Database-Driven Executive Panels & Achievements Manager**: `executive_members` & `achievements` tables + RLS + auto-seeding in `scripts/db-seed.mjs`, CRUD APIs (`/api/executives`, `/api/achievements`), public `/executives` & `Achievements` wired to PostgreSQL, admin `/dashboard/manage-executives` & `/dashboard/manage-achievements`.
+  5. **Shareable Post Permalinks (`/posts/[slug]`) + Dynamic Open Graph Metadata**: `blogs.slug` + unique index, `/api/blogs/slug/[slug]`, Server Component `/posts/[slug]` with `generateMetadata()`, and `SharePostButton`.
+- [x] Fixed dev-port `CORS origin forbidden` (e.g., running `next dev` on port `3001`) by permitting **dev-only same-origin** `http://localhost:<port>` / `http://127.0.0.1:<port>` matching the request `Host` header across `middleware.ts`, `cors.ts`, `csrf.ts`, and `guards.ts` (strictly disabled in production, still blocking all cross-origin requests), switched dev reset/verify links to relative paths, and fixed silent `/login` errors by adding `catch` handling + inline error banner alongside `toast.error`.
 
 ### Pending Tasks
-- [ ] **Host-environment runtime verification** (must be run in host terminal outside snap confinement):
-  1. `cp .env.example .env.local` and populate strong random secrets (`openssl rand -hex 32`).
-  2. Start PostgreSQL (`POSTGRES_PASSWORD=... docker compose up -d` or local Postgres).
-  3. `npm install && npm run db:setup && npm run db:seed`
-  4. `npm run typecheck && npm run lint && npm run build && npm audit`
-  5. End-to-end smoke test (register, verify email, login, enable 2FA, login with TOTP, admin CRUD, executive application & recruit flow).
+- [ ] Apply new Tier 1 schema & seed data in host terminal (`npm run db:setup && npm run db:seed`), then run `npm run typecheck && npm run build`.
+- [ ] Optional next roadmap: **Tier 2** features (Certificate Verification Portal, Live Notice Bar, Member Project Showcase, Learning Hub).
 
 ---
 
@@ -89,14 +94,12 @@
 ---
 
 ## 7. Exact Next Step
-In your host terminal inside `/home/mashrafi47/next-MCPIC`, configure `.env.local`, start PostgreSQL, and run installation + database setup + build verification:
+In your host terminal inside `/home/mashrafi47/next-MCPIC`, apply the updated Tier 1 schema & RLS policies, seed the executive panels & achievements into PostgreSQL, and verify the TypeScript build:
 ```bash
 cd /home/mashrafi47/next-MCPIC
-cp .env.example .env.local   # fill NEXTAUTH_SECRET, MFA_ENCRYPTION_KEY, WEBHOOK_SECRET, DB passwords
-POSTGRES_PASSWORD="YOUR_STRONG_PASSWORD" docker compose up -d
-npm install
 npm run db:setup
 npm run db:seed
-npm run typecheck && npm run lint && npm run build && npm audit
+npm run typecheck && npm run build
+npm run dev
 ```
 If TypeScript, ESLint, or `next build` reports any issues, share the output so they can be fixed immediately.

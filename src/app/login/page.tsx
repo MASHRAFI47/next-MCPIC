@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { FormCardSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 
 interface LoginValues {
@@ -22,6 +22,7 @@ function LoginForm() {
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [mfaRequired, setMfaRequired] = useState(false);
   const [forgotOpen, setForgotOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
@@ -36,32 +37,49 @@ function LoginForm() {
 
   const onSubmit = async (values: LoginValues) => {
     setSubmitting(true);
+    setFormError(null);
     try {
       const res = await signIn("credentials", {
         redirect: false,
-        email: values.email,
+        email: values.email.trim(),
         password: values.password,
         totpCode: values.totpCode || "",
       });
 
-      if (res?.error === "MFA_REQUIRED") {
+      if (!res) {
+        const msg = "Sign in failed. Please try again.";
+        setFormError(msg);
+        toast.error(msg);
+        return;
+      }
+
+      if (res.error === "MFA_REQUIRED") {
         setMfaRequired(true);
         toast("Enter your 6-digit authenticator code (or recovery code).");
         return;
       }
 
-      if (res?.error === "INVALID_MFA_CODE") {
-        toast.error("Invalid authenticator or recovery code.");
+      if (res.error === "INVALID_MFA_CODE") {
+        const msg = "Invalid authenticator or recovery code.";
+        setFormError(msg);
+        toast.error(msg);
         return;
       }
 
-      if (res?.error === "TOO_MANY_ATTEMPTS") {
-        toast.error("Too many login attempts. Please wait before trying again.");
+      if (res.error === "TOO_MANY_ATTEMPTS") {
+        const msg = "Too many login attempts. Please wait before trying again.";
+        setFormError(msg);
+        toast.error(msg);
         return;
       }
 
-      if (res?.error || !res?.ok) {
-        toast.error("Invalid email or password.");
+      if (res.error || !res.ok) {
+        const msg =
+          res.error && res.error !== "CredentialsSignin"
+            ? res.error
+            : "Invalid email or password.";
+        setFormError(msg);
+        toast.error(msg);
         return;
       }
 
@@ -71,6 +89,13 @@ function LoginForm() {
         callbackUrl.startsWith("/") && !callbackUrl.startsWith("//") ? callbackUrl : "/";
       router.push(safeTarget);
       router.refresh();
+    } catch (err) {
+      const msg =
+        err instanceof Error && err.message && !err.message.includes("Invalid URL")
+          ? err.message
+          : "Unable to sign in right now. Please check your credentials and try again.";
+      setFormError(msg);
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }
@@ -120,6 +145,15 @@ function LoginForm() {
 
           <h1 className="text-3xl font-bold text-center text-[#e8f5f3] mt-2">WELCOME BACK</h1>
           <p className="text-center text-sm">Sign in to access your account</p>
+
+          {formError && (
+            <div
+              role="alert"
+              className="mt-2 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300"
+            >
+              {formError}
+            </div>
+          )}
 
           <div className="form-control mt-2">
             <label className="label">
@@ -256,7 +290,15 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen hero-grid flex items-center justify-center">
+          <div className="w-full max-w-sm">
+            <FormCardSkeleton fields={2} />
+          </div>
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   );

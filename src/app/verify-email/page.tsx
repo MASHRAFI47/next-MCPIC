@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { FormCardSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 
 function VerifyEmailInner() {
@@ -66,7 +66,15 @@ function VerifyEmailInner() {
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen hero-grid flex items-center justify-center">
+          <div className="w-full max-w-md">
+            <FormCardSkeleton fields={1} />
+          </div>
+        </div>
+      }
+    >
       <VerifyEmailInner />
     </Suspense>
   );

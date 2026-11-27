@@ -6,7 +6,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { format, isValid } from "date-fns";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { TablePageSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 import type { EventRecord } from "@/types/models";
 
@@ -45,7 +45,7 @@ export default function AllEventsPage() {
     }
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <TablePageSkeleton rows={5} cols={5} />;
 
   return (
     <div className="space-y-6">

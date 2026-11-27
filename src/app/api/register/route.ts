@@ -79,7 +79,8 @@ export async function POST(req: Request) {
     }
 
     const { nextAuthUrl, isProd } = getEnv();
-    const verifyLink = `${nextAuthUrl}/verify-email?token=${encodeURIComponent(rawToken)}`;
+    const verifyPath = `/verify-email?token=${encodeURIComponent(rawToken)}`;
+    const verifyLink = `${nextAuthUrl}${verifyPath}`;
 
     const mailResult = await sendMail({
       to: email,
@@ -92,7 +93,7 @@ export async function POST(req: Request) {
       {
         message: "Registration successful. Please verify your email.",
         user: created,
-        ...(!isProd && !mailResult.delivered ? { devVerifyUrl: verifyLink } : {}),
+        ...(!isProd && !mailResult.delivered ? { devVerifyUrl: verifyPath } : {}),
       },
       { status: 201 }
     );

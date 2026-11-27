@@ -122,6 +122,11 @@ export const createSegmentSchema = z
     imageUrl: safeImageUrlSchema,
     startDate: z.coerce.date(),
     endDate: z.coerce.date(),
+    registrationOpen: z.boolean().optional().default(true),
+    registrationDeadline: z.union([z.coerce.date(), z.literal(""), z.null()]).optional(),
+    maxParticipants: z.union([z.coerce.number().int().min(1).max(10000), z.literal(""), z.null()]).optional(),
+    isTeamBased: z.boolean().optional().default(false),
+    maxTeamSize: z.coerce.number().int().min(1).max(20).optional().default(1),
   })
   .refine((d) => d.endDate >= d.startDate, {
     message: "End date must be on or after start date",
@@ -169,4 +174,51 @@ export const contactSchema = z.object({
   name: safeText(2, 100),
   email: z.string().trim().toLowerCase().email("Invalid email address").max(254),
   message: safeText(10, 4000),
+});
+
+export const contactStatusSchema = z.object({
+  status: z.enum(["unread", "read", "resolved"]),
+});
+
+export const segmentRegistrationSchema = z.object({
+  participantName: safeText(2, 100),
+  email: z.string().trim().toLowerCase().email("Invalid email address").max(254),
+  phone: z
+    .string()
+    .trim()
+    .regex(/^[+0-9\-\s()]{7,20}$/, "Enter a valid phone number"),
+  institution: safeText(2, 150),
+  classGrade: safeText(1, 50),
+  teamName: z
+    .string()
+    .optional()
+    .transform((v) => (v ? sanitizeText(v, 100) : "")),
+  teamMembers: z
+    .string()
+    .optional()
+    .transform((v) => (v ? sanitizeText(v, 500) : "")),
+});
+
+export const executiveMemberSchema = z.object({
+  panelYear: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{4}$/, "Panel year must look like 2025-2026"),
+  name: safeText(2, 100),
+  post: safeText(2, 100),
+  imageUrl: safeImageUrlSchema.optional().default("/images/blank.webp"),
+  displayOrder: z.coerce.number().int().min(0).max(500).optional().default(0),
+});
+
+export const achievementSchema = z.object({
+  title: safeText(3, 140),
+  tag: safeText(2, 60),
+  imageUrl: safeImageUrlSchema,
+  year: z
+    .string()
+    .trim()
+    .max(20)
+    .optional()
+    .transform((v) => (v ? sanitizeText(v, 20) : "")),
+  displayOrder: z.coerce.number().int().min(0).max(500).optional().default(0),
 });

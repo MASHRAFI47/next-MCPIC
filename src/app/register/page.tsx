@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { CgSpinnerTwoAlt } from "react-icons/cg";
 import { apiFetch, uploadImage } from "@/lib/api-client";
 
 interface RegisterValues {
@@ -165,7 +164,7 @@ export default function RegisterPage() {
               disabled={loading}
               className="text-sm font-semibold py-3 rounded-2xl px-5 border border-[#30c4b6] bg-[#30c4b6] text-[#080f0e] hover:bg-[#1c9e92] transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              Register {loading && <CgSpinnerTwoAlt className="animate-spin" />}
+              {loading ? "Registering..." : "Register"}
             </button>
           </div>
 

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { CgSpinnerTwoAlt } from "react-icons/cg";
 import { apiFetch, uploadImage } from "@/lib/api-client";
 
 interface AddEventValues {
@@ -156,7 +155,7 @@ export default function AddEventPage() {
               disabled={loading}
               className="btn border-[#30c4b6] bg-[#30c4b6] text-[#080f0e] hover:bg-[#1c9e92]"
             >
-              Add Event {loading && <CgSpinnerTwoAlt className="animate-spin" />}
+              {loading ? "Adding Event..." : "Add Event"}
             </button>
           </div>
         </form>

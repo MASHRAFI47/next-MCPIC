@@ -6,7 +6,7 @@ import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { FaCheckCircle, FaShieldAlt } from "react-icons/fa";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { ProfilePageSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 
 export default function ProfilePage() {
@@ -33,7 +33,7 @@ export default function ProfilePage() {
   const [disablePassword, setDisablePassword] = useState("");
   const [disableCode, setDisableCode] = useState("");
 
-  if (status === "loading") return <LoadingSpinner />;
+  if (status === "loading") return <ProfilePageSkeleton />;
   const user = session?.user;
   if (!user) return null;
 

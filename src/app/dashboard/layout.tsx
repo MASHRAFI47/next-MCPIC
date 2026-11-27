@@ -5,40 +5,52 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { FaHome, FaUsers, FaWpforms, FaSignOutAlt } from "react-icons/fa";
-import { FaUsersRays } from "react-icons/fa6";
-import { GoGraph } from "react-icons/go";
-import { MdAddAlert, MdAddBox, MdOutlineEvent } from "react-icons/md";
-import { GrBlog } from "react-icons/gr";
-import { ImBlog } from "react-icons/im";
-import { CgProfile } from "react-icons/cg";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import {
+  IconActivity,
+  IconAward,
+  IconBook,
+  IconCalendar,
+  IconCalendarPlus,
+  IconFilePlus,
+  IconForm,
+  IconHome,
+  IconLayers,
+  IconLogout,
+  IconMail,
+  IconMenu,
+  IconRecruit,
+  IconStats,
+  IconTicket,
+  IconTrophy,
+  IconUser,
+  IconUsers,
+} from "@/components/Icons";
 
 const ADMIN_LINKS = [
-  { href: "/dashboard", label: "Statistics", icon: GoGraph, exact: true },
-  { href: "/dashboard/manage-users", label: "Manage Users", icon: FaUsers },
-  { href: "/dashboard/add-event", label: "Add Event", icon: MdAddAlert },
-  { href: "/dashboard/all-events", label: "All Events", icon: MdOutlineEvent },
-  { href: "/dashboard/add-event-segment", label: "Add Event Segment", icon: MdAddBox },
-  { href: "/dashboard/add-blog", label: "Add Blog", icon: ImBlog },
-  { href: "/dashboard/all-blogs", label: "All Blogs", icon: GrBlog },
-  { href: "/dashboard/recruit", label: "Recruit", icon: FaUsersRays },
+  { href: "/dashboard", label: "Statistics", icon: IconStats, exact: true },
+  { href: "/dashboard/manage-users", label: "Manage Users", icon: IconUsers },
+  { href: "/dashboard/add-event", label: "Add Event", icon: IconCalendarPlus },
+  { href: "/dashboard/all-events", label: "All Events", icon: IconCalendar },
+  { href: "/dashboard/add-event-segment", label: "Add Event Segment", icon: IconLayers },
+  { href: "/dashboard/add-blog", label: "Add Blog", icon: IconFilePlus },
+  { href: "/dashboard/all-blogs", label: "All Blogs", icon: IconBook },
+  { href: "/dashboard/recruit", label: "Recruit", icon: IconRecruit },
+  { href: "/dashboard/manage-executives", label: "Executives", icon: IconAward },
+  { href: "/dashboard/manage-achievements", label: "Achievements", icon: IconTrophy },
+  { href: "/dashboard/messages", label: "Messages Inbox", icon: IconMail },
+  { href: "/dashboard/audit-logs", label: "Audit Logs", icon: IconActivity },
 ];
 
 const MEMBER_LINKS = [
-  { href: "/dashboard", label: "Statistics", icon: GoGraph, exact: true },
-  { href: "/dashboard/my-forms", label: "My Forms", icon: FaWpforms },
+  { href: "/dashboard", label: "Statistics", icon: IconStats, exact: true },
+  { href: "/dashboard/my-registrations", label: "My Registrations", icon: IconTicket },
+  { href: "/dashboard/my-forms", label: "My Forms", icon: IconForm },
 ];
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  if (status === "loading") {
-    return <LoadingSpinner />;
-  }
 
   const user = session?.user;
   const roleLinks = user?.role === "admin" ? ADMIN_LINKS : MEMBER_LINKS;
@@ -80,7 +92,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               : "text-[#e8f5f3] hover:bg-[#102220]"
           }`}
         >
-          <CgProfile size={18} />
+          <IconUser size={18} />
           <span>Profile &amp; MFA</span>
         </Link>
       </li>
@@ -90,7 +102,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           onClick={onNavigate}
           className="font-semibold flex items-center gap-3 text-[#89aca8] hover:text-[#e8f5f3] hover:bg-[#102220] rounded-lg"
         >
-          <FaHome size={18} />
+          <IconHome size={18} />
           <span>Home</span>
         </Link>
       </li>
@@ -100,7 +112,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           onClick={() => signOut({ callbackUrl: "/" })}
           className="font-semibold flex items-center gap-3 text-red-400 hover:bg-red-950/40 rounded-lg"
         >
-          <FaSignOutAlt size={18} />
+          <IconLogout size={18} />
           <span>Logout</span>
         </button>
       </li>
@@ -117,7 +129,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           onClick={() => setDrawerOpen(true)}
           className="btn btn-ghost btn-sm text-[#e8f5f3]"
         >
-          <GiHamburgerMenu size={20} />
+          <IconMenu size={20} />
         </button>
         <div className="flex items-center gap-3">
           <span className="text-sm text-[#89aca8]">Hi, {user?.name}</span>

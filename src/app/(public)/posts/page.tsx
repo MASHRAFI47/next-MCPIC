@@ -17,7 +17,8 @@ import {
 } from "react-icons/fa";
 import { MdArrowRightAlt } from "react-icons/md";
 import Title from "@/components/Title";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import SharePostButton from "@/components/SharePostButton";
+import { PostsPageSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 import type { BlogRecord } from "@/types/models";
 
@@ -33,7 +34,6 @@ function estimateReadMinutes(text: string): number {
 
 export default function PostsPage() {
   const [search, setSearch] = useState("");
-  const [activePost, setActivePost] = useState<BlogRecord | null>(null);
 
   const { data: blogs = [], isLoading } = useQuery({
     queryKey: ["blogs"],
@@ -94,7 +94,7 @@ export default function PostsPage() {
         </div>
 
         {isLoading ? (
-          <LoadingSpinner />
+          <PostsPageSkeleton />
         ) : filtered.length === 0 ? (
           <div className="card bg-[#0b1514] border border-[#122e2a] p-12 text-center space-y-3">
             <h2 className="text-3xl text-[#e8f5f3]">
@@ -122,7 +122,10 @@ export default function PostsPage() {
               {/* Featured Latest Post */}
               {featuredPost && (
                 <article className="group grid grid-cols-1 md:grid-cols-12 bg-[#0b1514] border border-[#122e2a] hover:border-[#30c4b6]/60 rounded-2xl overflow-hidden transition-colors shadow-xl">
-                  <div className="md:col-span-6 relative min-h-[260px] md:min-h-[340px] bg-[#060d0c] overflow-hidden">
+                  <Link
+                    href={`/posts/${encodeURIComponent(featuredPost.slug)}`}
+                    className="md:col-span-6 relative min-h-[260px] md:min-h-[340px] bg-[#060d0c] overflow-hidden block"
+                  >
                     <Image
                       src={featuredPost.image_url}
                       alt={featuredPost.title}
@@ -134,7 +137,7 @@ export default function PostsPage() {
                     <span className="absolute top-4 left-4 font-mono text-[11px] uppercase tracking-widest px-3 py-1 rounded-full bg-[#30c4b6] text-[#080f0e] font-semibold">
                       Latest Post
                     </span>
-                  </div>
+                  </Link>
 
                   <div className="md:col-span-6 p-6 md:p-8 flex flex-col justify-between gap-4">
                     <div className="space-y-3">
@@ -150,23 +153,25 @@ export default function PostsPage() {
                         </span>
                       </div>
 
-                      <h2 className="text-3xl md:text-4xl text-[#e8f5f3] tracking-wide leading-tight">
-                        {featuredPost.title}
-                      </h2>
+                      <Link href={`/posts/${encodeURIComponent(featuredPost.slug)}`}>
+                        <h2 className="text-3xl md:text-4xl text-[#e8f5f3] hover:text-[#30c4b6] transition-colors tracking-wide leading-tight">
+                          {featuredPost.title}
+                        </h2>
+                      </Link>
 
                       <p className="text-sm leading-relaxed line-clamp-5 whitespace-pre-wrap">
                         {featuredPost.description}
                       </p>
                     </div>
 
-                    <div className="pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setActivePost(featuredPost)}
+                    <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
+                      <Link
+                        href={`/posts/${encodeURIComponent(featuredPost.slug)}`}
                         className="btn btn-sm border-[#30c4b6] bg-[#30c4b6] text-[#080f0e] hover:bg-[#1c9e92] rounded-xl"
                       >
                         Read Full Post <MdArrowRightAlt size={18} />
-                      </button>
+                      </Link>
+                      <SharePostButton slug={featuredPost.slug} compact />
                     </div>
                   </div>
                 </article>
@@ -180,7 +185,10 @@ export default function PostsPage() {
                       key={blog.id}
                       className="group card bg-[#0b1514] border border-[#122e2a] hover:border-[#30c4b6]/60 rounded-2xl overflow-hidden transition-colors flex flex-col"
                     >
-                      <div className="relative h-52 w-full bg-[#060d0c] overflow-hidden">
+                      <Link
+                        href={`/posts/${encodeURIComponent(blog.slug)}`}
+                        className="relative h-52 w-full bg-[#060d0c] overflow-hidden block"
+                      >
                         <Image
                           src={blog.image_url}
                           alt={blog.title}
@@ -189,7 +197,7 @@ export default function PostsPage() {
                           unoptimized={blog.image_url.startsWith("/api/uploads/")}
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
-                      </div>
+                      </Link>
 
                       <div className="card-body p-6 flex flex-col justify-between gap-4 flex-1">
                         <div className="space-y-2.5">
@@ -201,9 +209,11 @@ export default function PostsPage() {
                             <span>{estimateReadMinutes(blog.description)} min</span>
                           </div>
 
-                          <h3 className="text-2xl text-[#e8f5f3] tracking-wide leading-snug line-clamp-2">
-                            {blog.title}
-                          </h3>
+                          <Link href={`/posts/${encodeURIComponent(blog.slug)}`}>
+                            <h3 className="text-2xl text-[#e8f5f3] hover:text-[#30c4b6] transition-colors tracking-wide leading-snug line-clamp-2">
+                              {blog.title}
+                            </h3>
+                          </Link>
 
                           <p className="text-sm leading-relaxed line-clamp-3 whitespace-pre-wrap">
                             {blog.description}
@@ -211,13 +221,13 @@ export default function PostsPage() {
                         </div>
 
                         <div className="pt-2 border-t border-[#122e2a] flex items-center justify-between">
-                          <button
-                            type="button"
-                            onClick={() => setActivePost(blog)}
+                          <Link
+                            href={`/posts/${encodeURIComponent(blog.slug)}`}
                             className="text-xs font-mono uppercase tracking-wider text-[#30c4b6] hover:text-[#e8f5f3] flex items-center gap-1 transition-colors"
                           >
                             Read Article <MdArrowRightAlt size={16} />
-                          </button>
+                          </Link>
+                          <SharePostButton slug={blog.slug} compact />
                         </div>
                       </div>
                     </article>
@@ -289,63 +299,6 @@ export default function PostsPage() {
           </div>
         )}
       </div>
-
-      {/* Full Post Reader Modal */}
-      {activePost && (
-        <div
-          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label={activePost.title}
-          onClick={() => setActivePost(null)}
-        >
-          <article
-            className="bg-[#0b1514] border border-[#17403b] rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-[#0b1514]/95 backdrop-blur border-b border-[#122e2a]">
-              <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-[#89aca8]">
-                <span className="text-[#30c4b6] flex items-center gap-1.5">
-                  <FaUserEdit /> {activePost.publisher_name}
-                </span>
-                <span>·</span>
-                <span>{formatPublishDate(activePost.created_at)}</span>
-                <span>·</span>
-                <span>{estimateReadMinutes(activePost.description)} min read</span>
-              </div>
-              <button
-                type="button"
-                aria-label="Close post"
-                onClick={() => setActivePost(null)}
-                className="btn btn-sm btn-circle btn-ghost text-[#e8f5f3]"
-              >
-                <FaTimes size={16} />
-              </button>
-            </div>
-
-            <div className="p-6 md:p-8 space-y-6">
-              <h2 className="text-3xl md:text-4xl text-[#e8f5f3] tracking-wide leading-tight">
-                {activePost.title}
-              </h2>
-
-              <div className="relative w-full h-64 sm:h-96 rounded-xl overflow-hidden bg-[#060d0c] border border-[#122e2a]">
-                <Image
-                  src={activePost.image_url}
-                  alt={activePost.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 768px"
-                  unoptimized={activePost.image_url.startsWith("/api/uploads/")}
-                  className="object-contain"
-                />
-              </div>
-
-              <div className="text-sm sm:text-base leading-7 text-[#c5dbd8] whitespace-pre-wrap break-words">
-                {activePost.description}
-              </div>
-            </div>
-          </article>
-        </div>
-      )}
     </section>
   );
 }

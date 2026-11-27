@@ -21,26 +21,23 @@ export async function GET(req: Request) {
 
   try {
     const segments = await withDbContext(guard.dbCtx, async (client) => {
+      const baseQuery = `
+        SELECT s.id, s.event_id, e.name AS event_name, e.slug AS event_slug,
+               s.name, s.description, s.image_url, s.start_date, s.end_date,
+               s.registration_open, s.registration_deadline, s.max_participants,
+               s.is_team_based, s.max_team_size, s.created_at
+        FROM segments s
+        JOIN events e ON e.id = s.event_id
+      `;
       if (eventIdParam) {
         const res = await client.query(
-          `SELECT s.id, s.event_id, e.name AS event_name, e.slug AS event_slug,
-                  s.name, s.description, s.image_url, s.start_date, s.end_date, s.created_at
-           FROM segments s
-           JOIN events e ON e.id = s.event_id
-           WHERE s.event_id = $1
-           ORDER BY s.created_at DESC`,
+          `${baseQuery} WHERE s.event_id = $1 ORDER BY s.created_at DESC`,
           [eventIdParam]
         );
         return res.rows;
       }
 
-      const res = await client.query(
-        `SELECT s.id, s.event_id, e.name AS event_name, e.slug AS event_slug,
-                s.name, s.description, s.image_url, s.start_date, s.end_date, s.created_at
-         FROM segments s
-         JOIN events e ON e.id = s.event_id
-         ORDER BY s.created_at DESC`
-      );
+      const res = await client.query(`${baseQuery} ORDER BY s.created_at DESC`);
       return res.rows;
     });
 
@@ -75,18 +72,36 @@ export async function POST(req: Request) {
     );
   }
 
-  const { eventId, name, description, imageUrl, startDate, endDate } = parsed.data;
+  const d = parsed.data;
+  const deadline = d.registrationDeadline instanceof Date ? d.registrationDeadline : null;
+  const maxParticipants = typeof d.maxParticipants === "number" ? d.maxParticipants : null;
+  const maxTeamSize = d.isTeamBased ? Math.max(2, d.maxTeamSize) : 1;
 
   try {
     const created = await withDbContext(guard.dbCtx, async (client) => {
-      const eventCheck = await client.query("SELECT id FROM events WHERE id = $1 LIMIT 1", [eventId]);
+      const eventCheck = await client.query("SELECT id FROM events WHERE id = $1 LIMIT 1", [d.eventId]);
       if (!eventCheck.rowCount) return null;
 
       const res = await client.query(
-        `INSERT INTO segments (event_id, name, description, image_url, start_date, end_date)
-         VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING id, event_id, name, description, image_url, start_date, end_date, created_at`,
-        [eventId, name, description, imageUrl, startDate, endDate]
+        `INSERT INTO segments
+           (event_id, name, description, image_url, start_date, end_date,
+            registration_open, registration_deadline, max_participants, is_team_based, max_team_size)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+         RETURNING id, event_id, name, description, image_url, start_date, end_date,
+                   registration_open, registration_deadline, max_participants, is_team_based, max_team_size, created_at`,
+        [
+          d.eventId,
+          d.name,
+          d.description,
+          d.imageUrl,
+          d.startDate,
+          d.endDate,
+          d.registrationOpen,
+          deadline,
+          maxParticipants,
+          d.isTeamBased,
+          maxTeamSize,
+        ]
       );
 
       await writeAuditLog(client, {
@@ -94,7 +109,7 @@ export async function POST(req: Request) {
         action: "segment.created",
         resourceType: "segment",
         resourceId: res.rows[0].id,
-        metadata: { eventId, name },
+        metadata: { eventId: d.eventId, name: d.name },
       });
 
       return res.rows[0];
