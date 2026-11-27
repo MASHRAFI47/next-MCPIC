@@ -46,7 +46,7 @@ export default function WhoWeAre() {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12 items-stretch">
           {SECTORS.map((s, idx) => (
             <Reveal key={s.number} direction="zoom" delay={idx * 90} className="h-full">
               <SectorCard
