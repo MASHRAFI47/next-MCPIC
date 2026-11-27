@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "@/components/Providers";
+import { useTheme } from "@/components/ThemeContext";
 import { IconMoon, IconSun } from "@/components/Icons";
 
 interface ThemeToggleProps {

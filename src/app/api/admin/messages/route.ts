@@ -11,10 +11,21 @@ export async function GET(req: Request) {
   if (!guard.ok) return guard.response;
 
   const url = new URL(req.url);
+  const countOnly = url.searchParams.get("countOnly")?.trim();
   const status = url.searchParams.get("status")?.trim();
   const filterStatus = status && ALLOWED_STATUSES.has(status) ? status : null;
 
   try {
+    if (countOnly === "unread") {
+      const unreadCount = await withDbContext(guard.dbCtx, async (client) => {
+        const res = await client.query<{ count: number }>(
+          "SELECT COUNT(*)::int AS count FROM contact_messages WHERE status = 'unread'"
+        );
+        return res.rows[0]?.count ?? 0;
+      });
+      return jsonResponse(req, { unreadCount });
+    }
+
     const messages = await withDbContext(guard.dbCtx, async (client) => {
       if (filterStatus) {
         const res = await client.query(

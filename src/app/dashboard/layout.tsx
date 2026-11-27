@@ -5,7 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
 import ThemeToggle from "@/components/ThemeToggle";
+import { apiFetch } from "@/lib/api-client";
 import {
   IconActivity,
   IconAward,
@@ -91,7 +93,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const user = session?.user;
-  const roleLinks = user?.role === "admin" ? ADMIN_LINKS : MEMBER_LINKS;
+  const isAdmin = user?.role === "admin";
+  const roleLinks = isAdmin ? ADMIN_LINKS : MEMBER_LINKS;
+
+  const { data: unreadData } = useQuery({
+    queryKey: ["admin-unread-messages-count"],
+    enabled: isAdmin,
+    queryFn: () =>
+      apiFetch<{ unreadCount: number }>("/api/admin/messages?countOnly=unread"),
+    staleTime: 15_000,
+    refetchInterval: 30_000,
+  });
+  const unreadMessagesCount = unreadData?.unreadCount ?? 0;
 
   const isProfileActive =
     pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/");
@@ -101,6 +114,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {roleLinks.map((item) => {
         const Icon = item.icon;
         const isActive = isNavItemActive(pathname, item);
+        const showUnreadBadge =
+          item.href === "/dashboard/messages" && unreadMessagesCount > 0;
         return (
           <li key={item.href}>
             <Link
@@ -113,8 +128,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   : "text-[#e8f5f3] hover:bg-[#102220]"
               }`}
             >
-              <Icon size={18} />
-              <span>{item.label}</span>
+              <Icon size={18} className="shrink-0" />
+              <span className="flex-1 truncate">{item.label}</span>
+              {showUnreadBadge && (
+                <span
+                  title={`${unreadMessagesCount} unread message${unreadMessagesCount === 1 ? "" : "s"}`}
+                  className="keep-dark inline-flex items-center gap-1 rounded-full bg-red-500 px-2 py-0.5 text-[11px] font-mono font-bold leading-none text-white shadow-sm"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                  {unreadMessagesCount > 99 ? "99+" : unreadMessagesCount}
+                </span>
+              )}
             </Link>
           </li>
         );
@@ -170,9 +194,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           type="button"
           aria-label="Open dashboard navigation"
           onClick={() => setDrawerOpen(true)}
-          className="btn btn-ghost btn-sm text-[#e8f5f3]"
+          className="relative btn btn-ghost btn-sm text-[#e8f5f3]"
         >
           <IconMenu size={20} />
+          {unreadMessagesCount > 0 && (
+            <span
+              aria-label={`${unreadMessagesCount} unread messages`}
+              className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-[#0b1514]"
+            />
+          )}
         </button>
         <div className="flex items-center gap-2.5">
           <ThemeToggle />

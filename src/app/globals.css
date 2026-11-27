@@ -242,7 +242,8 @@ html[data-theme="light"] .divide-\[\#122e2a\] > :not([hidden]) ~ :not([hidden]) 
 }
 
 /* Text colors (skipping .keep-dark subtrees) */
-html[data-theme="light"] .text-\[\#e8f5f3\]:not(.keep-dark):not(.keep-dark *) {
+html[data-theme="light"] .text-\[\#e8f5f3\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .text-\[\#c5dbd8\]:not(.keep-dark):not(.keep-dark *) {
   color: #0b1f1d;
 }
 

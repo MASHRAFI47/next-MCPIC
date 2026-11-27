@@ -3,7 +3,8 @@ import { cookies } from "next/headers";
 import { getServerSession } from "next-auth";
 import { Bebas_Neue, IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import Providers, { type AppTheme } from "@/components/Providers";
+import Providers from "@/components/Providers";
+import type { AppTheme } from "@/components/ThemeContext";
 import { authOptions } from "@/lib/auth";
 
 const bebasNeue = Bebas_Neue({

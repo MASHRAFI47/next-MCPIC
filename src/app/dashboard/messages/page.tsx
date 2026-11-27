@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, isValid } from "date-fns";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
@@ -18,6 +18,7 @@ function fmtDate(val: string): string {
 }
 
 export default function MessagesInboxPage() {
+  const queryClient = useQueryClient();
   const [tab, setTab] = useState<FilterTab>("all");
   const [selected, setSelected] = useState<ContactMessageRecord | null>(null);
 
@@ -39,6 +40,7 @@ export default function MessagesInboxPage() {
       toast.success(`Marked as ${updated.status}`);
       if (selected?.id === updated.id) setSelected(updated);
       refetch();
+      queryClient.invalidateQueries({ queryKey: ["admin-unread-messages-count"] });
     },
     onError: (err) => {
       toast.error(err instanceof Error ? err.message : "Failed to update message");
@@ -50,6 +52,7 @@ export default function MessagesInboxPage() {
     onSuccess: () => {
       setSelected(null);
       refetch();
+      queryClient.invalidateQueries({ queryKey: ["admin-unread-messages-count"] });
     },
   });
 
