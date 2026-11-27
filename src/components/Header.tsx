@@ -86,19 +86,26 @@ export default function Header() {
         </div>
 
         <div className="navbar-center hidden lg:flex">
-          <ul className="menu menu-horizontal px-1 gap-1.5">
+          <ul className="flex items-center px-1 gap-1.5">
             {NAV_LINKS.map((item) => {
               const isActive =
-                item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                item.href === "/"
+                  ? pathname === "/"
+                  : item.href === "/events"
+                    ? pathname === "/events" ||
+                      pathname.startsWith("/events/") ||
+                      pathname.startsWith("/segments/")
+                    : pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className={
+                    aria-current={isActive ? "page" : undefined}
+                    className={`inline-flex items-center px-4 py-2 text-sm rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30c4b6]/60 ${
                       isActive
-                        ? "!bg-[#0c1d1b] text-[#30c4b6] font-semibold"
-                        : "text-[#8aada9] hover:text-[#e8f5f3]"
-                    }
+                        ? "bg-[#0c1d1b] text-[#30c4b6] font-semibold"
+                        : "text-[#8aada9] hover:text-[#e8f5f3] hover:bg-[#0c1d1b]/60"
+                    }`}
                   >
                     {item.label}
                   </Link>
@@ -187,20 +194,27 @@ export default function Header() {
       {/* Controlled Mobile Navigation Drawer */}
       {mobileOpen && (
         <nav className="lg:hidden bg-[#0b1514] border-t border-[#122e2a] px-4 py-3">
-          <ul className="menu menu-sm space-y-1">
+          <ul className="flex flex-col space-y-1">
             {NAV_LINKS.map((item) => {
               const isActive =
-                item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                item.href === "/"
+                  ? pathname === "/"
+                  : item.href === "/events"
+                    ? pathname === "/events" ||
+                      pathname.startsWith("/events/") ||
+                      pathname.startsWith("/segments/")
+                    : pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
                     onClick={() => setMobileOpen(false)}
-                    className={
+                    aria-current={isActive ? "page" : undefined}
+                    className={`block w-full px-3 py-2 text-sm rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30c4b6]/60 ${
                       isActive
-                        ? "!bg-[#0c1d1b] text-[#30c4b6] font-semibold"
-                        : "text-[#8aada9] hover:text-[#e8f5f3]"
-                    }
+                        ? "bg-[#0c1d1b] text-[#30c4b6] font-semibold"
+                        : "text-[#8aada9] hover:text-[#e8f5f3] hover:bg-[#0c1d1b]/60"
+                    }`}
                   >
                     {item.label}
                   </Link>

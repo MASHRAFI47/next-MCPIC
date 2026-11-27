@@ -26,14 +26,36 @@ import {
   IconUsers,
 } from "@/components/Icons";
 
-const ADMIN_LINKS = [
+interface NavItem {
+  href: string;
+  label: string;
+  icon: typeof IconStats;
+  exact?: boolean;
+  matchPrefixes?: string[];
+}
+
+const ADMIN_LINKS: NavItem[] = [
   { href: "/dashboard", label: "Statistics", icon: IconStats, exact: true },
   { href: "/dashboard/manage-users", label: "Manage Users", icon: IconUsers },
   { href: "/dashboard/add-event", label: "Add Event", icon: IconCalendarPlus },
-  { href: "/dashboard/all-events", label: "All Events", icon: IconCalendar },
+  {
+    href: "/dashboard/all-events",
+    label: "All Events",
+    icon: IconCalendar,
+    matchPrefixes: [
+      "/dashboard/all-event-segments",
+      "/dashboard/update-event-segment",
+      "/dashboard/segment-registrations",
+    ],
+  },
   { href: "/dashboard/add-event-segment", label: "Add Event Segment", icon: IconLayers },
   { href: "/dashboard/add-blog", label: "Add Blog", icon: IconFilePlus },
-  { href: "/dashboard/all-blogs", label: "All Blogs", icon: IconBook },
+  {
+    href: "/dashboard/all-blogs",
+    label: "All Blogs",
+    icon: IconBook,
+    matchPrefixes: ["/dashboard/update-blog"],
+  },
   { href: "/dashboard/recruit", label: "Recruit", icon: IconRecruit },
   { href: "/dashboard/manage-executives", label: "Executives", icon: IconAward },
   { href: "/dashboard/manage-achievements", label: "Achievements", icon: IconTrophy },
@@ -41,11 +63,26 @@ const ADMIN_LINKS = [
   { href: "/dashboard/audit-logs", label: "Audit Logs", icon: IconActivity },
 ];
 
-const MEMBER_LINKS = [
+const MEMBER_LINKS: NavItem[] = [
   { href: "/dashboard", label: "Statistics", icon: IconStats, exact: true },
   { href: "/dashboard/my-registrations", label: "My Registrations", icon: IconTicket },
   { href: "/dashboard/my-forms", label: "My Forms", icon: IconForm },
 ];
+
+function isNavItemActive(pathname: string, item: NavItem): boolean {
+  if (item.exact) {
+    return pathname === item.href;
+  }
+  if (pathname === item.href || pathname.startsWith(`${item.href}/`)) {
+    return true;
+  }
+  if (item.matchPrefixes) {
+    return item.matchPrefixes.some(
+      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+    );
+  }
+  return false;
+}
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -55,19 +92,21 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const user = session?.user;
   const roleLinks = user?.role === "admin" ? ADMIN_LINKS : MEMBER_LINKS;
 
+  const isProfileActive =
+    pathname === "/dashboard/profile" || pathname.startsWith("/dashboard/profile/");
+
   const renderMenu = (onNavigate?: () => void) => (
-    <ul className="menu space-y-1 p-3">
+    <ul className="space-y-1 p-3">
       {roleLinks.map((item) => {
         const Icon = item.icon;
-        const isActive = item.exact
-          ? pathname === item.href
-          : pathname.startsWith(item.href);
+        const isActive = isNavItemActive(pathname, item);
         return (
           <li key={item.href}>
             <Link
               href={item.href}
               onClick={onNavigate}
-              className={`font-semibold flex items-center gap-3 rounded-lg ${
+              aria-current={isActive ? "page" : undefined}
+              className={`w-full px-3 py-2.5 text-sm font-semibold flex items-center gap-3 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30c4b6]/60 ${
                 isActive
                   ? "bg-[#30c4b6] text-[#080f0e]"
                   : "text-[#e8f5f3] hover:bg-[#102220]"
@@ -80,14 +119,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         );
       })}
 
-      <div className="divider my-2 border-[#122e2a]" />
+      <li aria-hidden="true" className="py-2">
+        <div className="border-t border-[#122e2a]" />
+      </li>
 
       <li>
         <Link
           href="/dashboard/profile"
           onClick={onNavigate}
-          className={`font-semibold flex items-center gap-3 rounded-lg ${
-            pathname.startsWith("/dashboard/profile")
+          aria-current={isProfileActive ? "page" : undefined}
+          className={`w-full px-3 py-2.5 text-sm font-semibold flex items-center gap-3 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30c4b6]/60 ${
+            isProfileActive
               ? "bg-[#30c4b6] text-[#080f0e]"
               : "text-[#e8f5f3] hover:bg-[#102220]"
           }`}
@@ -100,7 +142,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <Link
           href="/"
           onClick={onNavigate}
-          className="font-semibold flex items-center gap-3 text-[#89aca8] hover:text-[#e8f5f3] hover:bg-[#102220] rounded-lg"
+          className="w-full px-3 py-2.5 text-sm font-semibold flex items-center gap-3 text-[#89aca8] hover:text-[#e8f5f3] hover:bg-[#102220] rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30c4b6]/60"
         >
           <IconHome size={18} />
           <span>Home</span>
@@ -110,7 +152,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="font-semibold flex items-center gap-3 text-red-400 hover:bg-red-950/40 rounded-lg"
+          className="w-full px-3 py-2.5 text-sm font-semibold flex items-center gap-3 text-red-400 hover:bg-red-950/40 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/60"
         >
           <IconLogout size={18} />
           <span>Logout</span>
