@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import ThemeToggle from "@/components/ThemeToggle";
 import { apiFetch } from "@/lib/api-client";
 
 const NAV_LINKS = [
@@ -115,7 +116,8 @@ export default function Header() {
           </ul>
         </div>
 
-        <div className="navbar-end gap-3">
+        <div className="navbar-end gap-2.5">
+          <ThemeToggle />
           {user ? (
             <>
               {recruitmentOpen && (

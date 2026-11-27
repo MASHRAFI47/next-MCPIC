@@ -70,7 +70,7 @@ export default function Banner() {
                 aria-hidden="true"
                 className="pointer-events-none absolute -inset-3 rounded-3xl bg-[#30c4b6]/10 blur-2xl"
               />
-              <div className="animate-float-slow relative mockup-code w-full bg-[#0a1714] border border-[#122e2a] hover:border-[#30c4b6]/40 shadow-2xl shadow-[#30c4b6]/5 text-xs space-y-2 text-[#8a92b2] transition-colors">
+              <div className="keep-dark animate-float-slow relative mockup-code w-full bg-[#0a1714] border border-[#122e2a] hover:border-[#30c4b6]/40 shadow-2xl shadow-[#30c4b6]/5 text-xs space-y-2 text-[#8a92b2] transition-colors">
                 <pre className="text-[#5c6280] pl-6">
                   <code>{"// MCPIC Event System"}</code>
                 </pre>

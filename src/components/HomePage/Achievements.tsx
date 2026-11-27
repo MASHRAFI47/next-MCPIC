@@ -147,7 +147,7 @@ export default function Achievements() {
                 <button
                   type="button"
                   onClick={() => setActiveIndex(idx)}
-                  className={`group relative w-full overflow-hidden rounded-2xl border border-[#122e2a] hover:border-[#30c4b6]/70 bg-[#0c1917] text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#30c4b6]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30c4b6] ${height}`}
+                  className={`keep-dark group relative w-full overflow-hidden rounded-2xl border border-[#122e2a] hover:border-[#30c4b6]/70 bg-[#0c1917] text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#30c4b6]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30c4b6] ${height}`}
                 >
                 <Image
                   src={item.src}
@@ -214,7 +214,7 @@ export default function Achievements() {
               </button>
             </div>
 
-            <div className="relative w-full h-[55vh] sm:h-[68vh] bg-[#060d0c]">
+            <div className="keep-dark relative w-full h-[55vh] sm:h-[68vh] bg-[#060d0c]">
               {!isActiveLoaded && (
                 <div className="absolute inset-0 z-[1] p-6">
                   <div className="w-full h-full rounded-xl bg-gradient-to-r from-[#0c1917] via-[#132c28] to-[#0c1917] animate-pulse border border-[#17403b]/60" />

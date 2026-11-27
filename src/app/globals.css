@@ -119,3 +119,262 @@ p {
     animation: none !important;
   }
 }
+
+/* ============================================================================
+   MCPIC WHITE / LIGHT MODE DESIGN SYSTEM
+   Scoped strictly under html[data-theme="light"] so dark mode stays untouched.
+   Elements marked `.keep-dark` (e.g., code terminal, photo overlays, colored
+   icon badges) intentionally preserve high-contrast dark surfaces.
+   ============================================================================ */
+
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+html[data-theme="light"],
+html[data-theme="light"] body {
+  background-color: #f8fbfa;
+  color: #0b1f1d;
+}
+
+html[data-theme="light"] *,
+html[data-theme="light"] ::before,
+html[data-theme="light"] ::after {
+  border-color: #d6e6e3;
+}
+
+html[data-theme="light"] p {
+  color: #42615e;
+}
+
+html[data-theme="light"] .tags {
+  color: #0d9488;
+}
+
+html[data-theme="light"] .hero-grid {
+  background-color: #f8fcfb;
+  background-size: 100px 100px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cdefs%3E%3Cpattern id='smallGrid' width='10' height='10' patternUnits='userSpaceOnUse'%3E%3Cpath d='M 10 0 L 0 0 0 10' fill='none' stroke='%230d9488' stroke-width='0.5' opacity='0.09'/%3E%3C/pattern%3E%3Cpattern id='grid' width='60' height='60' patternUnits='userSpaceOnUse'%3E%3Crect width='60' height='60' fill='url(%23smallGrid)'/%3E%3Cpath d='M 60 0 L 0 0 0 60' fill='none' stroke='%230d9488' stroke-width='1' opacity='0.16'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23grid)'/%3E%3C/svg%3E");
+}
+
+/* Header */
+html[data-theme="light"] header.bg-\[\#07100e\]\/95 {
+  background-color: rgba(255, 255, 255, 0.92);
+  border-color: #d6e6e3;
+  box-shadow: 0 1px 12px rgba(11, 31, 29, 0.05);
+}
+
+/* Main dark backgrounds -> crisp white & soft mint-white surfaces */
+html[data-theme="light"] .bg-\[\#080f0e\]:not(.keep-dark):not(.keep-dark *) {
+  background-color: #f8fbfa;
+}
+
+html[data-theme="light"] .bg-\[\#060d0c\]:not(.keep-dark):not(.keep-dark *) {
+  background-color: #eaf3f1;
+}
+
+html[data-theme="light"] .bg-\[\#0b1514\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .bg-\[\#0c1917\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .bg-\[\#0a1714\]:not(.keep-dark):not(.keep-dark *) {
+  background-color: #ffffff;
+}
+
+html[data-theme="light"] .bg-\[\#0d1a18\]:not(.keep-dark):not(.keep-dark *) {
+  background-color: #eef6f4;
+}
+
+html[data-theme="light"] .bg-\[\#0d1c1a\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .bg-\[\#0c1d1b\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .bg-\[\#0f211e\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .bg-\[\#102220\]:not(.keep-dark):not(.keep-dark *) {
+  background-color: #edf6f4;
+}
+
+html[data-theme="light"] .bg-\[\#132c28\]:not(.keep-dark):not(.keep-dark *) {
+  background-color: #d8eae6;
+}
+
+html[data-theme="light"] .bg-\[\#0f2422\]:not(.keep-dark):not(.keep-dark *) {
+  background-color: #e6f2ef;
+}
+
+/* Radial section backgrounds (WhoWeAre & Achievements) */
+html[data-theme="light"] .bg-gradient-radial {
+  background-image: linear-gradient(180deg, #f2f8f7 0%, #f9fcfb 50%, #f2f8f7 100%);
+}
+
+/* Marquee edge fade masks */
+html[data-theme="light"] .from-\[\#0c1917\] {
+  --tw-gradient-from: #ffffff var(--tw-gradient-from-position);
+  --tw-gradient-to: rgba(255, 255, 255, 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+/* Hover backgrounds */
+html[data-theme="light"] .hover\:bg-\[\#102220\]:hover,
+html[data-theme="light"] .hover\:bg-\[\#0c1d1b\]:hover,
+html[data-theme="light"] .hover\:bg-\[\#0c1d1b\]\/60:hover,
+html[data-theme="light"] .hover\:bg-\[\#102220\]\/60:hover {
+  background-color: #e3f2ef;
+}
+
+html[data-theme="light"] .hover\:bg-red-950\/40:hover {
+  background-color: #fef2f2;
+}
+
+/* Borders */
+html[data-theme="light"] .border-\[\#122e2a\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .border-\[\#112927\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .border-\[\#0f2422\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .border-\[\#102b28\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .border-\[\#0f2d29\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .border-\[\#133630\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .border-\[\#10312d\]:not(.keep-dark):not(.keep-dark *) {
+  border-color: #d3e5e2;
+}
+
+html[data-theme="light"] .border-\[\#17403b\]:not(.keep-dark):not(.keep-dark *) {
+  border-color: #bdd7d2;
+}
+
+html[data-theme="light"] .divide-\[\#122e2a\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #dcebe8;
+}
+
+/* Text colors (skipping .keep-dark subtrees) */
+html[data-theme="light"] .text-\[\#e8f5f3\]:not(.keep-dark):not(.keep-dark *) {
+  color: #0b1f1d;
+}
+
+html[data-theme="light"] .text-white:not(.keep-dark):not(.keep-dark *) {
+  color: #0b1f1d;
+}
+
+html[data-theme="light"] .text-\[\#89aca8\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .text-\[\#8aada9\]:not(.keep-dark):not(.keep-dark *) {
+  color: #42615e;
+}
+
+html[data-theme="light"] .text-\[\#4a6564\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .text-neutral-400:not(.keep-dark):not(.keep-dark *) {
+  color: #5d7b78;
+}
+
+html[data-theme="light"] .text-\[\#30c4b6\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .text-\[\#30c3b6\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .text-\[\#2dbeb1\]:not(.keep-dark):not(.keep-dark *) {
+  color: #0d9488;
+}
+
+html[data-theme="light"] .text-\[\#a89ec9\]:not(.keep-dark):not(.keep-dark *) {
+  color: #6d4fc2;
+}
+
+html[data-theme="light"] .hover\:text-\[\#e8f5f3\]:not(.keep-dark):hover,
+html[data-theme="light"] .hover\:text-white:not(.keep-dark):hover {
+  color: #0b1f1d;
+}
+
+html[data-theme="light"] .hover\:text-\[\#30c4b6\]:not(.keep-dark):hover {
+  color: #0f766e;
+}
+
+html[data-theme="light"] .placeholder\:text-\[\#4a6564\]::placeholder {
+  color: #7c9794;
+}
+
+/* Solid teal primary buttons & active dashboard nav items */
+html[data-theme="light"] .bg-\[\#30c4b6\]:not(.keep-dark) {
+  background-color: #0d9488;
+}
+
+html[data-theme="light"] .border-\[\#30c4b6\]:not(.keep-dark) {
+  border-color: #0d9488;
+}
+
+html[data-theme="light"] .bg-\[\#30c4b6\].text-\[\#080f0e\] {
+  color: #ffffff;
+}
+
+html[data-theme="light"] .hover\:bg-\[\#1c9e92\]:hover {
+  background-color: #0f766e;
+}
+
+html[data-theme="light"] .hover\:border-\[\#30c4b6\]:hover,
+html[data-theme="light"] .hover\:border-\[\#30c4b6\]\/70:hover,
+html[data-theme="light"] .hover\:border-\[\#30c4b6\]\/60:hover,
+html[data-theme="light"] .hover\:border-\[\#30c4b6\]\/50:hover {
+  border-color: #0d9488;
+}
+
+/* Alerts & semantic accents */
+html[data-theme="light"] .bg-amber-950\/40 {
+  background-color: #fffbeb;
+}
+
+html[data-theme="light"] .text-amber-200 {
+  color: #92400e;
+}
+
+html[data-theme="light"] .text-red-400,
+html[data-theme="light"] .text-red-300 {
+  color: #dc2626;
+}
+
+html[data-theme="light"] .bg-red-500\/10 {
+  background-color: #fef2f2;
+}
+
+/* Elevated light cards, inputs & dashboard tables */
+html[data-theme="light"] .card:not(.keep-dark) {
+  box-shadow: 0 4px 20px -4px rgba(11, 31, 29, 0.07), 0 1px 3px rgba(11, 31, 29, 0.04);
+}
+
+html[data-theme="light"] .input.bg-\[\#0d1c1a\],
+html[data-theme="light"] .textarea.bg-\[\#0d1c1a\],
+html[data-theme="light"] .select.bg-\[\#0d1c1a\],
+html[data-theme="light"] .file-input.bg-\[\#0d1c1a\] {
+  background-color: #f4faf9;
+  border-color: #c5ddd8;
+  color: #0b1f1d;
+}
+
+html[data-theme="light"] .input.bg-\[\#0d1c1a\]:focus,
+html[data-theme="light"] .textarea.bg-\[\#0d1c1a\]:focus,
+html[data-theme="light"] .select.bg-\[\#0d1c1a\]:focus {
+  background-color: #ffffff;
+  border-color: #0d9488;
+}
+
+html[data-theme="light"] .table thead tr {
+  background-color: #f1f8f7;
+  border-color: #d6e6e3;
+}
+
+html[data-theme="light"] .table tbody tr {
+  border-color: #e4f0ee;
+}
+
+html[data-theme="light"] .table tbody tr:hover {
+  background-color: #f6fbfa;
+}
+
+/* Keep-dark explicit safeguards (hero terminal, photo cards, stat icons) */
+html[data-theme="light"] .keep-dark .text-\[\#e8f5f3\] {
+  color: #e8f5f3;
+}
+
+html[data-theme="light"] .keep-dark .text-\[\#30c4b6\] {
+  color: #30c4b6;
+}
+
+html[data-theme="light"] .keep-dark.text-white,
+html[data-theme="light"] .keep-dark .text-white {
+  color: #ffffff;
+}
+
+html[data-theme="light"] .keep-dark.bg-\[\#0a1714\] {
+  background-color: #0b1917;
+  border-color: #163732;
+  box-shadow: 0 24px 50px -12px rgba(11, 31, 29, 0.25);
+}

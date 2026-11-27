@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import ThemeToggle from "@/components/ThemeToggle";
 import {
   IconActivity,
   IconAward,
@@ -173,7 +174,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         >
           <IconMenu size={20} />
         </button>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
+          <ThemeToggle />
           <span className="text-sm text-[#89aca8]">Hi, {user?.name}</span>
           <Image
             src={user?.image || "/images/blank.webp"}
@@ -221,20 +223,23 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col w-64 shrink-0 bg-[#0b1514] border-r border-[#122e2a] min-h-screen">
-        <div className="flex items-center gap-3 p-5 border-b border-[#122e2a]">
-          <Image
-            src="/mcpic-logo.png"
-            width={48}
-            height={48}
-            className="w-12 h-12 object-contain"
-            alt="MCPIC Logo"
-          />
-          <div>
-            <h1 className="text-3xl leading-none tracking-wider text-white">MCPIC</h1>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#30c4b6]">
-              {user?.role === "admin" ? "Admin Console" : "Member Portal"}
-            </span>
+        <div className="flex items-center justify-between gap-2 p-5 border-b border-[#122e2a]">
+          <div className="flex items-center gap-3 min-w-0">
+            <Image
+              src="/mcpic-logo.png"
+              width={44}
+              height={44}
+              className="w-11 h-11 object-contain shrink-0"
+              alt="MCPIC Logo"
+            />
+            <div className="min-w-0">
+              <h1 className="text-3xl leading-none tracking-wider text-white">MCPIC</h1>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#30c4b6] block truncate">
+                {user?.role === "admin" ? "Admin Console" : "Member Portal"}
+              </span>
+            </div>
           </div>
+          <ThemeToggle className="shrink-0" />
         </div>
         <div className="flex-1 overflow-y-auto">{renderMenu()}</div>
       </aside>

@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import ThemeToggle from "@/components/ThemeToggle";
 import { FormCardSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 
@@ -128,7 +129,10 @@ function LoginForm() {
   };
 
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center hero-grid p-4">
+    <section className="min-h-screen flex flex-col items-center justify-center hero-grid p-4 relative">
+      <div className="fixed top-4 right-4 z-40">
+        <ThemeToggle />
+      </div>
       <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-[#0b1514] border border-[#122e2a] mx-auto">
         <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex items-center justify-center gap-2">

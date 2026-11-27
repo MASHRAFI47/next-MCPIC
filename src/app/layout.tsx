@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { getServerSession } from "next-auth";
 import { Bebas_Neue, IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import Providers from "@/components/Providers";
+import Providers, { type AppTheme } from "@/components/Providers";
 import { authOptions } from "@/lib/auth";
 
 const bebasNeue = Bebas_Neue({
@@ -40,15 +41,19 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions).catch(() => null);
+  const themeCookie = cookies().get("mcpic_theme")?.value;
+  const initialTheme: AppTheme = themeCookie === "light" ? "light" : "dark";
 
   return (
     <html
       lang="en"
-      data-theme="dark"
+      data-theme={initialTheme}
       className={`${bebasNeue.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable}`}
     >
-      <body className="min-h-screen bg-[#080f0e] text-[#e8f5f3] font-sans antialiased">
-        <Providers session={session}>{children}</Providers>
+      <body className="min-h-screen bg-[#080f0e] text-[#e8f5f3] font-sans antialiased transition-colors duration-200">
+        <Providers session={session} initialTheme={initialTheme}>
+          {children}
+        </Providers>
       </body>
     </html>
   );
