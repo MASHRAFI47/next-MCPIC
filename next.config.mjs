@@ -49,7 +49,6 @@ const nextConfig = {
       "react-icons/im",
       "react-icons/cg",
       "date-fns",
-      "swiper",
     ],
   },
   images: {

@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import NotificationBell from "@/components/NotificationBell";
 import ThemeToggle from "@/components/ThemeToggle";
 import { apiFetch } from "@/lib/api-client";
 
@@ -30,7 +31,7 @@ export default function Header() {
     queryKey: ["recruitment-status"],
     enabled: Boolean(user),
     queryFn: () => apiFetch<{ enabled: boolean }>("/api/settings/recruitment"),
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
   });
 
   const recruitmentOpen = Boolean(recruitment?.enabled);
@@ -118,6 +119,7 @@ export default function Header() {
 
         <div className="navbar-end gap-2.5">
           <ThemeToggle />
+          {user && <NotificationBell align="right" />}
           {user ? (
             <>
               {recruitmentOpen && (

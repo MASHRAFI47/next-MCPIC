@@ -22,9 +22,11 @@ function getPool(): Pool {
     }
     global.__mcpicPgPool = new Pool({
       connectionString: databaseUrl,
+      min: 2,
       max: 15,
-      idleTimeoutMillis: 30_000,
+      idleTimeoutMillis: 60_000,
       connectionTimeoutMillis: 10_000,
+      statement_timeout: 10_000,
       ssl: isProd && !databaseUrl.includes("localhost") && !databaseUrl.includes("127.0.0.1")
         ? { rejectUnauthorized: true }
         : undefined,
@@ -34,6 +36,22 @@ function getPool(): Pool {
     });
   }
   return global.__mcpicPgPool;
+}
+
+/**
+ * Single round-trip read helper for strictly public, read-only tables whose
+ * PostgreSQL RLS SELECT policy is `USING (true)` (events, segments, blogs,
+ * achievements, executive_members, site_settings). Avoids BEGIN/set_config/COMMIT
+ * overhead (1 DB round-trip instead of 4) while still executing as the
+ * least-privilege `mcpic_app` role with forced RLS active.
+ */
+export async function queryPublic<T extends Record<string, unknown> = Record<string, unknown>>(
+  text: string,
+  values?: unknown[]
+): Promise<T[]> {
+  const pool = getPool();
+  const res = await pool.query<T>(text, values);
+  return res.rows;
 }
 
 /**

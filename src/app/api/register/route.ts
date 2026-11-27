@@ -3,6 +3,7 @@ import { withDbContext, writeAuditLog } from "@/lib/db";
 import { getEnv } from "@/lib/env";
 import { logger } from "@/lib/logger";
 import { sendMail } from "@/lib/mailer";
+import { createNotification } from "@/lib/notifications";
 import { randomTokenHex, sha256Hex } from "@/lib/security/crypto";
 import { guardRequest, jsonResponse } from "@/lib/security/guards";
 import { registerSchema } from "@/lib/validators";
@@ -66,6 +67,18 @@ export async function POST(req: Request) {
         resourceType: "user",
         resourceId: user.id,
       });
+
+      await createNotification(
+        {
+          audience: "admins",
+          category: "member",
+          title: `New Member Registered: ${fullName}`,
+          body: `${fullName} (${email}) just created an MCPIC account.`,
+          link: "/dashboard/manage-users",
+          createdBy: user.id,
+        },
+        client
+      );
 
       return user;
     });

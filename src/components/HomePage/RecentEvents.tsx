@@ -9,10 +9,16 @@ import { CardsGridSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
 import type { EventRecord } from "@/types/models";
 
-export default function RecentEvents() {
+export default function RecentEvents({
+  initialEvents,
+}: {
+  initialEvents?: EventRecord[];
+}) {
   const { data: events = [], isLoading } = useQuery({
-    queryKey: ["events"],
+    queryKey: ["recent-events"],
     queryFn: () => apiFetch<EventRecord[]>("/api/events"),
+    initialData: initialEvents,
+    staleTime: 60_000,
   });
 
   return (

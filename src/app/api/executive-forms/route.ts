@@ -1,5 +1,6 @@
 import { withDbContext, writeAuditLog } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { createNotification } from "@/lib/notifications";
 import { guardRequest, jsonResponse } from "@/lib/security/guards";
 import { executiveApplicationSchema } from "@/lib/validators";
 
@@ -125,6 +126,15 @@ export async function POST(req: Request) {
         { status: 409 }
       );
     }
+
+    await createNotification({
+      audience: "admins",
+      category: "application",
+      title: `New Executive Application: ${guard.session!.user.name}`,
+      body: `${guard.session!.user.name} applied for the executive committee. Review in Recruit.`,
+      link: "/dashboard/recruit",
+      createdBy: userId,
+    });
 
     return jsonResponse(req, result.data, { status: 201 });
   } catch (err) {

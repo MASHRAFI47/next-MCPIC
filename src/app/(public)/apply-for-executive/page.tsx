@@ -261,7 +261,6 @@ export default function ApplyForExecutivePage() {
             </>
           )}
         </div>
-      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
-import { withDbContext, writeAuditLog } from "@/lib/db";
+import { queryPublic, withDbContext, writeAuditLog } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { createNotification } from "@/lib/notifications";
 import { guardRequest, jsonResponse } from "@/lib/security/guards";
 import { slugify } from "@/lib/security/sanitize";
 import { createEventSchema } from "@/lib/validators";
@@ -11,17 +12,16 @@ export async function GET(req: Request) {
   if (!guard.ok) return guard.response;
 
   try {
-    const events = await withDbContext(guard.dbCtx, async (client) => {
-      const res = await client.query(
-        `SELECT id, slug, name, description, image_url, start_date, end_date,
-                created_by, created_by_name, created_at, updated_at
-         FROM events
-         ORDER BY created_at DESC`
-      );
-      return res.rows;
-    });
+    const events = await queryPublic(
+      `SELECT id, slug, name, description, image_url, start_date, end_date,
+              created_by, created_by_name, created_at, updated_at
+       FROM events
+       ORDER BY created_at DESC`
+    );
 
-    return jsonResponse(req, events);
+    const res = jsonResponse(req, events);
+    res.headers.set("Cache-Control", "public, max-age=15, stale-while-revalidate=60");
+    return res;
   } catch (err) {
     logger.error("Failed to fetch events", { error: err });
     return jsonResponse(req, { error: "Failed to fetch events" }, { status: 500 });
@@ -78,6 +78,19 @@ export async function POST(req: Request) {
         resourceId: res.rows[0].id,
         metadata: { name },
       });
+
+      await createNotification(
+        {
+          audience: "members",
+          category: "event",
+          title: `New Event: ${name}`,
+          body:
+            description.length > 140 ? `${description.slice(0, 137)}...` : description,
+          link: `/events/${encodeURIComponent(slug)}`,
+          createdBy: user.id,
+        },
+        client
+      );
 
       return res.rows[0];
     });

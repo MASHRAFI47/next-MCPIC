@@ -40,14 +40,19 @@ function getBentoClasses(index: number, total: number): { span: string; height: 
   return { span: "lg:col-span-4", height: "h-64 sm:h-72" };
 }
 
-export default function Achievements() {
+export default function Achievements({
+  initialAchievements,
+}: {
+  initialAchievements?: AchievementRecord[];
+}) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [loadedIds, setLoadedIds] = useState<Set<string>>(() => new Set());
 
   const { data: dbAchievements } = useQuery({
     queryKey: ["achievements"],
     queryFn: () => apiFetch<AchievementRecord[]>("/api/achievements"),
-    staleTime: 60_000,
+    initialData: initialAchievements && initialAchievements.length > 0 ? initialAchievements : undefined,
+    staleTime: 120_000,
   });
 
   const items: DisplayAchievement[] = useMemo(() => {
@@ -147,7 +152,7 @@ export default function Achievements() {
                 <button
                   type="button"
                   onClick={() => setActiveIndex(idx)}
-                  className={`keep-dark group relative w-full overflow-hidden rounded-2xl border border-[#122e2a] hover:border-[#30c4b6]/70 bg-[#0c1917] text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#30c4b6]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30c4b6] ${height}`}
+                  className={`keep-dark group relative w-full overflow-hidden rounded-2xl border border-[#122e2a] hover:border-[#30c4b6]/70 bg-[#0c1917] text-left transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#30c4b6]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30c4b6] ${height}`}
                 >
                 <Image
                   src={item.src}

@@ -47,8 +47,10 @@ export default function Providers({
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60_000,
+            staleTime: 2 * 60_000,
+            gcTime: 10 * 60_000,
             refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
             retry: 1,
           },
         },

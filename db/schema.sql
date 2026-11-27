@@ -522,3 +522,96 @@ CREATE POLICY achievements_select_policy ON achievements
 DROP POLICY IF EXISTS achievements_write_policy ON achievements;
 CREATE POLICY achievements_write_policy ON achievements
   FOR ALL USING (app_is_admin()) WITH CHECK (app_is_admin());
+
+-- ----------------------------------------------------------------------------
+-- 16. Role-Aware Notifications & Per-User Read Receipts (Forced RLS)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  audience TEXT NOT NULL CHECK (audience IN ('all', 'members', 'admins', 'user')),
+  target_user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  category TEXT NOT NULL CHECK (
+    category IN (
+      'event',
+      'post',
+      'recruitment',
+      'message',
+      'application',
+      'registration',
+      'member',
+      'announcement',
+      'security'
+    )
+  ),
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  link TEXT NOT NULL DEFAULT '/',
+  created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT notifications_user_target_check CHECK (
+    audience <> 'user' OR target_user_id IS NOT NULL
+  )
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_audience_created
+  ON notifications (audience, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_target_user
+  ON notifications (target_user_id, created_at DESC)
+  WHERE target_user_id IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS notification_reads (
+  notification_id UUID NOT NULL REFERENCES notifications(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  read_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (notification_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_notification_reads_user
+  ON notification_reads (user_id, read_at DESC);
+
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS notifications_select_policy ON notifications;
+CREATE POLICY notifications_select_policy ON notifications
+  FOR SELECT USING (
+    app_is_system()
+    OR (
+      app_user_id() IS NOT NULL
+      AND (
+        audience = 'all'
+        OR (audience = 'admins' AND app_user_role() = 'admin')
+        OR (audience = 'members' AND app_user_role() = 'member')
+        OR (audience = 'user' AND target_user_id = app_user_id())
+      )
+    )
+  );
+
+DROP POLICY IF EXISTS notifications_insert_policy ON notifications;
+CREATE POLICY notifications_insert_policy ON notifications
+  FOR INSERT WITH CHECK (app_is_system() OR app_is_admin());
+
+DROP POLICY IF EXISTS notifications_delete_policy ON notifications;
+CREATE POLICY notifications_delete_policy ON notifications
+  FOR DELETE USING (app_is_system() OR app_is_admin());
+
+ALTER TABLE notification_reads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notification_reads FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS notification_reads_select_policy ON notification_reads;
+CREATE POLICY notification_reads_select_policy ON notification_reads
+  FOR SELECT USING (
+    app_is_system() OR (app_user_id() IS NOT NULL AND user_id = app_user_id())
+  );
+
+DROP POLICY IF EXISTS notification_reads_insert_policy ON notification_reads;
+CREATE POLICY notification_reads_insert_policy ON notification_reads
+  FOR INSERT WITH CHECK (
+    app_is_system() OR (app_user_id() IS NOT NULL AND user_id = app_user_id())
+  );
+
+DROP POLICY IF EXISTS notification_reads_delete_policy ON notification_reads;
+CREATE POLICY notification_reads_delete_policy ON notification_reads
+  FOR DELETE USING (
+    app_is_system() OR (app_user_id() IS NOT NULL AND user_id = app_user_id())
+  );

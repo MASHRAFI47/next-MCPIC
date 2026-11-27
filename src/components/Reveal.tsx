@@ -93,8 +93,8 @@ export default function Reveal({
         transitionDelay: `${delay}ms`,
         transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
       }}
-      className={`transition-all will-change-transform ${
-        visible ? visibleClass : hiddenClass
+      className={`transition-[opacity,transform] ${
+        visible ? visibleClass : `${hiddenClass} will-change-transform`
       } ${className}`}
     >
       {children}

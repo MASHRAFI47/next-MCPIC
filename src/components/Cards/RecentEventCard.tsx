@@ -19,7 +19,7 @@ export default function RecentEventCard({ event }: { event: EventRecord }) {
 
   return (
     <Link href={`/events/${encodeURIComponent(event.slug)}`} className="block h-full group">
-      <section className="card bg-[#0c1917] border border-[#122e2a] hover:border-[#30c4b6]/60 shadow-sm hover:shadow-xl hover:shadow-[#30c4b6]/10 h-[25rem] overflow-hidden transition-all duration-300 group-hover:-translate-y-1.5">
+      <section className="card bg-[#0c1917] border border-[#122e2a] hover:border-[#30c4b6]/60 shadow-sm hover:shadow-xl hover:shadow-[#30c4b6]/10 h-[25rem] overflow-hidden transition-[transform,border-color,box-shadow] duration-300 group-hover:-translate-y-1.5">
         <figure className="relative h-[52%] w-full overflow-hidden">
           <Image
             src={event.image_url}

@@ -24,7 +24,7 @@ export default function DevelopersSection() {
         </Reveal>
 
         <Reveal direction="up" delay={120}>
-          <div className="group card card-side flex flex-col lg:flex-row bg-[#0b1514] border border-[#122e2a] hover:border-[#30c4b6]/50 shadow-sm hover:shadow-xl hover:shadow-[#30c4b6]/10 mt-10 overflow-hidden transition-all duration-300">
+          <div className="group card card-side flex flex-col lg:flex-row bg-[#0b1514] border border-[#122e2a] hover:border-[#30c4b6]/50 shadow-sm hover:shadow-xl hover:shadow-[#30c4b6]/10 mt-10 overflow-hidden transition-[border-color,box-shadow] duration-300">
             <figure className="relative w-full lg:w-80 shrink-0 h-72 sm:h-96 lg:h-auto overflow-hidden">
               <Image
                 src="/images/developer/developer.jpg"

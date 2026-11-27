@@ -257,3 +257,30 @@ export function IconMoon(props: IconProps) {
     </SvgIcon>
   );
 }
+
+export function IconBell(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </SvgIcon>
+  );
+}
+
+export function IconMegaphone(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="m3 11 18-5v12L3 14v-3z" />
+      <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+    </SvgIcon>
+  );
+}
+
+export function IconCheckDouble(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M18 6 7 17l-5-5" />
+      <path d="m22 10-7.5 7.5L13 16" />
+    </SvgIcon>
+  );
+}

@@ -634,6 +634,50 @@ async function main() {
       console.log(`Seeded ${insertedBlogs} tech blog posts.`);
     }
 
+    // Seed starter role-aware notifications if table is empty
+    const notifCount = await client.query("SELECT COUNT(*)::int AS count FROM notifications");
+    if ((notifCount.rows[0]?.count ?? 0) === 0) {
+      const starterNotifications = [
+        {
+          audience: "members",
+          category: "event",
+          title: "New Event: CyberSprint 4.0 — National Tech Fest",
+          body: "Registration is now open for Competitive Programming, Full-Stack Hackathon, and CTF!",
+          link: "/events/cybersprint-4-0",
+        },
+        {
+          audience: "members",
+          category: "post",
+          title: "New Tech Read: How AI Coding Agents Are Transforming Software Engineering",
+          body: "Explore how AI agents work and why core CS fundamentals matter more than ever.",
+          link: "/posts/how-ai-coding-agents-are-transforming-software-engineering",
+        },
+        {
+          audience: "members",
+          category: "announcement",
+          title: "Welcome to MCPIC Version 2.0!",
+          body: "Enjoy faster loading, White & Dark mode, live online event registration, and instant notifications.",
+          link: "/events",
+        },
+        {
+          audience: "admins",
+          category: "security",
+          title: "Admin Notification Center Active",
+          body: "New contact messages, executive applications, registrations, and member signups will appear here.",
+          link: "/dashboard/messages",
+        },
+      ];
+
+      for (const n of starterNotifications) {
+        await client.query(
+          `INSERT INTO notifications (audience, category, title, body, link, created_by)
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          [n.audience, n.category, n.title, n.body, n.link, adminId]
+        );
+      }
+      console.log(`Seeded ${starterNotifications.length} starter notifications.`);
+    }
+
     await client.query("COMMIT");
     console.log("Seed completed successfully.");
   } catch (err) {

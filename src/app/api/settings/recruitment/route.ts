@@ -1,5 +1,6 @@
-import { withDbContext, writeAuditLog } from "@/lib/db";
+import { queryPublic, withDbContext, writeAuditLog } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { createNotification } from "@/lib/notifications";
 import { guardRequest, jsonResponse } from "@/lib/security/guards";
 import { recruitmentToggleSchema } from "@/lib/validators";
 
@@ -10,14 +11,14 @@ export async function GET(req: Request) {
   if (!guard.ok) return guard.response;
 
   try {
-    const enabled = await withDbContext(guard.dbCtx, async (client) => {
-      const res = await client.query<{ value: { enabled?: boolean } }>(
-        "SELECT value FROM site_settings WHERE key = 'recruitment' LIMIT 1"
-      );
-      return Boolean(res.rows[0]?.value?.enabled);
-    });
+    const rows = await queryPublic<{ value: { enabled?: boolean } }>(
+      "SELECT value FROM site_settings WHERE key = 'recruitment' LIMIT 1"
+    );
+    const enabled = Boolean(rows[0]?.value?.enabled);
 
-    return jsonResponse(req, { enabled });
+    const res = jsonResponse(req, { enabled });
+    res.headers.set("Cache-Control", "public, max-age=30, stale-while-revalidate=120");
+    return res;
   } catch (err) {
     logger.error("Failed to fetch recruitment setting", { error: err });
     return jsonResponse(req, { enabled: false });
@@ -62,6 +63,20 @@ export async function PUT(req: Request) {
         resourceId: "recruitment",
         metadata: { enabled },
       });
+
+      if (enabled) {
+        await createNotification(
+          {
+            audience: "members",
+            category: "recruitment",
+            title: "Executive Recruitment Is Now Open!",
+            body: "Applications for the MCPIC Executive Committee are open. Submit your application today.",
+            link: "/apply-for-executive",
+            createdBy: guard.session!.user.id,
+          },
+          client
+        );
+      }
     });
 
     return jsonResponse(req, { enabled });

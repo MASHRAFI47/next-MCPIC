@@ -184,10 +184,15 @@ html[data-theme="light"] .bg-\[\#0d1a18\]:not(.keep-dark):not(.keep-dark *) {
 }
 
 html[data-theme="light"] .bg-\[\#0d1c1a\]:not(.keep-dark):not(.keep-dark *),
+html[data-theme="light"] .bg-\[\#0d1c1a\]\/70:not(.keep-dark):not(.keep-dark *),
 html[data-theme="light"] .bg-\[\#0c1d1b\]:not(.keep-dark):not(.keep-dark *),
 html[data-theme="light"] .bg-\[\#0f211e\]:not(.keep-dark):not(.keep-dark *),
 html[data-theme="light"] .bg-\[\#102220\]:not(.keep-dark):not(.keep-dark *) {
   background-color: #edf6f4;
+}
+
+html[data-theme="light"] .ring-\[\#080f0e\] {
+  --tw-ring-color: #ffffff;
 }
 
 html[data-theme="light"] .bg-\[\#132c28\]:not(.keep-dark):not(.keep-dark *) {

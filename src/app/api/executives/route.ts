@@ -1,4 +1,4 @@
-import { withDbContext, writeAuditLog } from "@/lib/db";
+import { queryPublic, withDbContext, writeAuditLog } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { guardRequest, jsonResponse } from "@/lib/security/guards";
 import { executiveMemberSchema } from "@/lib/validators";
@@ -10,16 +10,15 @@ export async function GET(req: Request) {
   if (!guard.ok) return guard.response;
 
   try {
-    const members = await withDbContext(guard.dbCtx, async (client) => {
-      const res = await client.query(
-        `SELECT id, panel_year, name, post, image_url, display_order, created_at
-         FROM executive_members
-         ORDER BY panel_year DESC, display_order ASC, created_at ASC`
-      );
-      return res.rows;
-    });
+    const members = await queryPublic(
+      `SELECT id, panel_year, name, post, image_url, display_order, created_at
+       FROM executive_members
+       ORDER BY panel_year DESC, display_order ASC, created_at ASC`
+    );
 
-    return jsonResponse(req, members);
+    const res = jsonResponse(req, members);
+    res.headers.set("Cache-Control", "public, max-age=30, stale-while-revalidate=120");
+    return res;
   } catch (err) {
     logger.error("Failed to fetch executive members", { error: err });
     return jsonResponse(req, { error: "Failed to load executives" }, { status: 500 });

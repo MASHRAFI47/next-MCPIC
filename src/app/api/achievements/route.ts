@@ -1,4 +1,4 @@
-import { withDbContext, writeAuditLog } from "@/lib/db";
+import { queryPublic, withDbContext, writeAuditLog } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { guardRequest, jsonResponse } from "@/lib/security/guards";
 import { achievementSchema } from "@/lib/validators";
@@ -10,16 +10,15 @@ export async function GET(req: Request) {
   if (!guard.ok) return guard.response;
 
   try {
-    const items = await withDbContext(guard.dbCtx, async (client) => {
-      const res = await client.query(
-        `SELECT id, title, tag, image_url, year, display_order, created_at
-         FROM achievements
-         ORDER BY display_order ASC, created_at DESC`
-      );
-      return res.rows;
-    });
+    const items = await queryPublic(
+      `SELECT id, title, tag, image_url, year, display_order, created_at
+       FROM achievements
+       ORDER BY display_order ASC, created_at DESC`
+    );
 
-    return jsonResponse(req, items);
+    const res = jsonResponse(req, items);
+    res.headers.set("Cache-Control", "public, max-age=30, stale-while-revalidate=120");
+    return res;
   } catch (err) {
     logger.error("Failed to fetch achievements", { error: err });
     return jsonResponse(req, { error: "Failed to load achievements" }, { status: 500 });

@@ -143,3 +143,32 @@ export interface AchievementRecord {
   display_order: number;
   created_at?: string;
 }
+
+export type NotificationAudience = "all" | "members" | "admins" | "user";
+
+export type NotificationCategory =
+  | "event"
+  | "post"
+  | "recruitment"
+  | "message"
+  | "application"
+  | "registration"
+  | "member"
+  | "announcement"
+  | "security";
+
+export interface NotificationRecord {
+  id: string;
+  audience: NotificationAudience;
+  category: NotificationCategory;
+  title: string;
+  body: string;
+  link: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface NotificationsResponse {
+  notifications: NotificationRecord[];
+  unreadCount: number;
+}

@@ -2,6 +2,7 @@ import { withDbContext } from "@/lib/db";
 import { getEnv } from "@/lib/env";
 import { logger } from "@/lib/logger";
 import { sendMail } from "@/lib/mailer";
+import { createNotification } from "@/lib/notifications";
 import { sha256Hex } from "@/lib/security/crypto";
 import { guardRequest, jsonResponse } from "@/lib/security/guards";
 import { contactSchema } from "@/lib/validators";
@@ -40,6 +41,14 @@ export async function POST(req: Request) {
          VALUES ($1, $2, $3, $4)`,
         [name, email, message, ipHash]
       );
+    });
+
+    await createNotification({
+      audience: "admins",
+      category: "message",
+      title: `New Contact Message from ${name}`,
+      body: message.length > 140 ? `${message.slice(0, 137)}...` : message,
+      link: "/dashboard/messages",
     });
 
     const { smtp } = getEnv();

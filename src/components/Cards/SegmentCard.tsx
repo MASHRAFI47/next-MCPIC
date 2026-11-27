@@ -10,7 +10,7 @@ export default function SegmentCard({ segment }: { segment: SegmentRecord }) {
 
   return (
     <Link href={`/segments/${segment.id}`} className="block h-full group">
-      <section className="card bg-[#0c1917] border border-[#122e2a] hover:border-[#30c4b6]/60 shadow-sm hover:shadow-xl hover:shadow-[#30c4b6]/10 h-[24rem] overflow-hidden transition-all duration-300 group-hover:-translate-y-1.5">
+      <section className="card bg-[#0c1917] border border-[#122e2a] hover:border-[#30c4b6]/60 shadow-sm hover:shadow-xl hover:shadow-[#30c4b6]/10 h-[24rem] overflow-hidden transition-[transform,border-color,box-shadow] duration-300 group-hover:-translate-y-1.5">
         <figure className="relative h-[58%] w-full overflow-hidden">
           <Image
             src={segment.image_url}

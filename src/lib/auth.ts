@@ -179,12 +179,12 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
-      // Throttle DB session revalidation to every 30s (or immediately on explicit update)
-      // so page navigation stays fast while role/revocation changes take effect promptly.
+      // Throttle passive DB session revalidation to every 2 minutes (or immediately on
+      // explicit session update) so navigations and API calls stay instant without DB stalls.
       const shouldRevalidate =
         trigger === "update" ||
         !token.lastCheckedAt ||
-        Date.now() - token.lastCheckedAt > 30_000;
+        Date.now() - token.lastCheckedAt > 120_000;
 
       if (token.id && shouldRevalidate) {
         try {

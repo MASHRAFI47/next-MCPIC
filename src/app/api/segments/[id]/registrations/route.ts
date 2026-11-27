@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { withDbContext, writeAuditLog } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { createNotification } from "@/lib/notifications";
 import { guardRequest, jsonResponse } from "@/lib/security/guards";
 import { segmentRegistrationSchema, uuidSchema } from "@/lib/validators";
 
@@ -184,6 +185,32 @@ export async function POST(
         resourceId: inserted.rows[0].id,
         metadata: { segmentId: segment.id, ticketCode },
       });
+
+      await createNotification(
+        {
+          audience: "admins",
+          category: "registration",
+          title: `New Segment Registration: ${segment.name}`,
+          body: `${d.participantName} (${d.institution}) registered — Ticket ${ticketCode}.`,
+          link: `/dashboard/segment-registrations/${segment.id}`,
+          createdBy: userId,
+        },
+        client
+      );
+
+      if (userId) {
+        await createNotification(
+          {
+            audience: "user",
+            targetUserId: userId,
+            category: "registration",
+            title: `Registration Confirmed: ${segment.name}`,
+            body: `Your seat is confirmed! Ticket code: ${ticketCode}.`,
+            link: "/dashboard/my-registrations",
+          },
+          client
+        );
+      }
 
       return { data: inserted.rows[0] };
     });

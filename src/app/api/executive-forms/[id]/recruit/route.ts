@@ -1,5 +1,6 @@
 import { withDbContext, writeAuditLog } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { createNotification } from "@/lib/notifications";
 import { guardRequest, jsonResponse } from "@/lib/security/guards";
 import { recruitApplicantSchema, uuidSchema } from "@/lib/validators";
 
@@ -66,6 +67,19 @@ export async function POST(
         resourceId: form.user_id,
         metadata: { designation, applicationId: form.id },
       });
+
+      await createNotification(
+        {
+          audience: "user",
+          targetUserId: form.user_id,
+          category: "recruitment",
+          title: "Welcome to the Executive Committee!",
+          body: `Congratulations! You have been recruited as ${designation}.`,
+          link: "/dashboard/profile",
+          createdBy: actorId,
+        },
+        client
+      );
 
       return { userId: form.user_id, designation };
     });

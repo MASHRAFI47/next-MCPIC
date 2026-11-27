@@ -1,5 +1,6 @@
-import { withDbContext, writeAuditLog } from "@/lib/db";
+import { queryPublic, withDbContext, writeAuditLog } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { createNotification } from "@/lib/notifications";
 import { guardRequest, jsonResponse } from "@/lib/security/guards";
 import { slugify } from "@/lib/security/sanitize";
 import { createBlogSchema } from "@/lib/validators";
@@ -11,16 +12,15 @@ export async function GET(req: Request) {
   if (!guard.ok) return guard.response;
 
   try {
-    const blogs = await withDbContext(guard.dbCtx, async (client) => {
-      const res = await client.query(
-        `SELECT id, slug, title, description, image_url, publisher_id, publisher_name, created_at, updated_at
-         FROM blogs
-         ORDER BY created_at DESC`
-      );
-      return res.rows;
-    });
+    const blogs = await queryPublic(
+      `SELECT id, slug, title, description, image_url, publisher_id, publisher_name, created_at, updated_at
+       FROM blogs
+       ORDER BY created_at DESC`
+    );
 
-    return jsonResponse(req, blogs);
+    const res = jsonResponse(req, blogs);
+    res.headers.set("Cache-Control", "public, max-age=15, stale-while-revalidate=60");
+    return res;
   } catch (err) {
     logger.error("Failed to fetch blogs", { error: err });
     return jsonResponse(req, { error: "Failed to fetch blogs" }, { status: 500 });
@@ -77,6 +77,18 @@ export async function POST(req: Request) {
         resourceId: res.rows[0].id,
         metadata: { title, slug },
       });
+
+      await createNotification(
+        {
+          audience: "members",
+          category: "post",
+          title: `New Post: ${title}`,
+          body: `Published by ${user.name}. Tap to read the full article.`,
+          link: `/posts/${encodeURIComponent(slug)}`,
+          createdBy: user.id,
+        },
+        client
+      );
 
       return res.rows[0];
     });

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
+import NotificationBell from "@/components/NotificationBell";
 import ThemeToggle from "@/components/ThemeToggle";
 import { apiFetch } from "@/lib/api-client";
 import {
@@ -101,8 +102,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     enabled: isAdmin,
     queryFn: () =>
       apiFetch<{ unreadCount: number }>("/api/admin/messages?countOnly=unread"),
-    staleTime: 15_000,
-    refetchInterval: 30_000,
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
   });
   const unreadMessagesCount = unreadData?.unreadCount ?? 0;
 
@@ -204,9 +206,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             />
           )}
         </button>
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <ThemeToggle />
-          <span className="text-sm text-[#89aca8]">Hi, {user?.name}</span>
+          <NotificationBell align="right" />
+          <span className="text-sm text-[#89aca8] hidden sm:inline">Hi, {user?.name}</span>
           <Image
             src={user?.image || "/images/blank.webp"}
             alt={user?.name || "Avatar"}
@@ -269,7 +272,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               </span>
             </div>
           </div>
-          <ThemeToggle className="shrink-0" />
+          <div className="flex items-center gap-1.5 shrink-0">
+            <ThemeToggle />
+            <NotificationBell align="left" />
+          </div>
         </div>
         <div className="flex-1 overflow-y-auto">{renderMenu()}</div>
       </aside>
