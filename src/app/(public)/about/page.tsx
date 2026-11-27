@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { GoHorizontalRule } from "react-icons/go";
 import Title from "@/components/Title";
+import Reveal from "@/components/Reveal";
 import DevelopersSection from "@/components/DevelopersSection";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
@@ -21,7 +22,7 @@ export default function AboutPage() {
   return (
     <div className="pt-12 hero-grid" id="about">
       <div className="container mx-auto px-6 md:px-10 lg:px-4 grid grid-cols-1 md:grid-cols-2 items-center gap-10 mb-14">
-        <div data-aos="slide-up">
+        <Reveal direction="up" immediate>
           <div className="flex flex-col gap-3">
             <p className="tags text-[11px] pt-2 flex items-center font-semibold tracking-widest gap-2">
               <GoHorizontalRule className="scale-x-150" /> ABOUT US
@@ -42,11 +43,11 @@ export default function AboutPage() {
               thrive in the rapidly evolving tech landscape.
             </p>
           </div>
-        </div>
+        </Reveal>
 
-        <div className="flex justify-center" data-aos="fade-down">
+        <Reveal direction="left" delay={150} immediate className="flex justify-center">
           {animationData && <Lottie animationData={animationData} className="w-3/4 max-w-md" loop />}
-        </div>
+        </Reveal>
       </div>
 
       <DevelopersSection />

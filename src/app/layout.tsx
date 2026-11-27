@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { Bebas_Neue, IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
-import "aos/dist/aos.css";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import { authOptions } from "@/lib/auth";

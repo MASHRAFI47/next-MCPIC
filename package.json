@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.62.7",
-    "aos": "^2.3.4",
     "bcryptjs": "^2.4.3",
     "date-fns": "^3.6.0",
     "lottie-react": "^2.4.0",
@@ -34,7 +33,6 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/aos": "^3.0.7",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.17.10",
     "@types/nodemailer": "^6.4.17",

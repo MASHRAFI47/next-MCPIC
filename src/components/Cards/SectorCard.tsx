@@ -42,11 +42,7 @@ export default function SectorCard({
       className="my-6 mx-1 transition-transform duration-200 ease-out"
       style={{ transformStyle: "preserve-3d", willChange: "transform" }}
     >
-      <div
-        className="card bg-[#0c1917] border border-[#0f2d29] hover:border-[#30c4b6]/50 hover:shadow-2xl text-white h-full"
-        data-aos="flip-left"
-        data-aos-duration="900"
-      >
+      <div className="card bg-[#0c1917] border border-[#0f2d29] hover:border-[#30c4b6]/60 hover:shadow-2xl hover:shadow-[#30c4b6]/10 text-white h-full transition-all duration-300">
         <div className="card-body">
           <div className="mb-2">
             <p className="text-xs font-mono text-[#30c4b6]">{number}</p>

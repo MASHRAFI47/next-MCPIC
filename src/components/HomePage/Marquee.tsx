@@ -14,6 +14,14 @@ export default function Marquee() {
 
   return (
     <div className="overflow-hidden border-y border-[#122e2a] bg-[#0c1917] py-6 relative">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#0c1917] to-transparent z-10"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#0c1917] to-transparent z-10"
+      />
       <div className="marquee-track">
         {repeated.map((label, idx) => (
           <div

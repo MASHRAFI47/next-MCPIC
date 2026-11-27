@@ -17,6 +17,7 @@ import {
 } from "react-icons/fa";
 import { MdArrowRightAlt } from "react-icons/md";
 import Title from "@/components/Title";
+import Reveal from "@/components/Reveal";
 import SharePostButton from "@/components/SharePostButton";
 import { PostsPageSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
@@ -58,40 +59,42 @@ export default function PostsPage() {
     <section className="min-h-screen px-6 md:px-10 lg:px-4 py-14 hero-grid">
       <div className="container mx-auto space-y-10">
         {/* Header + Search */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-          <div className="flex flex-col gap-3">
-            <p className="tags text-[11px] pt-2 flex items-center font-semibold tracking-widest gap-2">
-              <GoHorizontalRule className="scale-x-150" /> CLUB JOURNAL &amp; ANNOUNCEMENTS
-            </p>
-            <Title className="uppercase">POSTS &amp; UPDATES</Title>
-            <p className="text-[0.95rem] max-w-xl">
-              Stories, announcements, event recaps, and technical write-ups from the MCPIC team.
-            </p>
-          </div>
+        <Reveal direction="up" immediate>
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+            <div className="flex flex-col gap-3">
+              <p className="tags text-[11px] pt-2 flex items-center font-semibold tracking-widest gap-2">
+                <GoHorizontalRule className="scale-x-150" /> CLUB JOURNAL &amp; ANNOUNCEMENTS
+              </p>
+              <Title className="uppercase">POSTS &amp; UPDATES</Title>
+              <p className="text-[0.95rem] max-w-xl">
+                Stories, announcements, event recaps, and technical write-ups from the MCPIC team.
+              </p>
+            </div>
 
-          <div className="w-full lg:w-80">
-            <label className="input input-bordered bg-[#0b1514] border-[#17403b] focus-within:border-[#30c4b6] flex items-center gap-2 rounded-2xl">
-              <FaSearch className="text-[#4a6564]" size={14} />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search posts or authors..."
-                className="grow text-sm text-[#e8f5f3] placeholder:text-[#4a6564]"
-              />
-              {search && (
-                <button
-                  type="button"
-                  aria-label="Clear search"
-                  onClick={() => setSearch("")}
-                  className="text-[#89aca8] hover:text-white"
-                >
-                  <FaTimes size={12} />
-                </button>
-              )}
-            </label>
+            <div className="w-full lg:w-80">
+              <label className="input input-bordered bg-[#0b1514] border-[#17403b] focus-within:border-[#30c4b6] flex items-center gap-2 rounded-2xl transition-colors">
+                <FaSearch className="text-[#4a6564]" size={14} />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search posts or authors..."
+                  className="grow text-sm text-[#e8f5f3] placeholder:text-[#4a6564]"
+                />
+                {search && (
+                  <button
+                    type="button"
+                    aria-label="Clear search"
+                    onClick={() => setSearch("")}
+                    className="text-[#89aca8] hover:text-white"
+                  >
+                    <FaTimes size={12} />
+                  </button>
+                )}
+              </label>
+            </div>
           </div>
-        </div>
+        </Reveal>
 
         {isLoading ? (
           <PostsPageSkeleton />
@@ -121,7 +124,8 @@ export default function PostsPage() {
             <div className="lg:col-span-9 space-y-8">
               {/* Featured Latest Post */}
               {featuredPost && (
-                <article className="group grid grid-cols-1 md:grid-cols-12 bg-[#0b1514] border border-[#122e2a] hover:border-[#30c4b6]/60 rounded-2xl overflow-hidden transition-colors shadow-xl">
+                <Reveal direction="up" delay={80} immediate>
+                  <article className="group grid grid-cols-1 md:grid-cols-12 bg-[#0b1514] border border-[#122e2a] hover:border-[#30c4b6]/60 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 shadow-xl hover:shadow-[#30c4b6]/10">
                   <Link
                     href={`/posts/${encodeURIComponent(featuredPost.slug)}`}
                     className="md:col-span-6 relative min-h-[260px] md:min-h-[340px] bg-[#060d0c] overflow-hidden block"
@@ -174,17 +178,16 @@ export default function PostsPage() {
                       <SharePostButton slug={featuredPost.slug} compact />
                     </div>
                   </div>
-                </article>
+                  </article>
+                </Reveal>
               )}
 
               {/* Remaining Posts Grid */}
               {gridPosts.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {gridPosts.map((blog) => (
-                    <article
-                      key={blog.id}
-                      className="group card bg-[#0b1514] border border-[#122e2a] hover:border-[#30c4b6]/60 rounded-2xl overflow-hidden transition-colors flex flex-col"
-                    >
+                  {gridPosts.map((blog, idx) => (
+                    <Reveal key={blog.id} direction="up" delay={(idx % 2) * 90} className="h-full">
+                      <article className="group card bg-[#0b1514] border border-[#122e2a] hover:border-[#30c4b6]/60 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#30c4b6]/10 flex flex-col h-full">
                       <Link
                         href={`/posts/${encodeURIComponent(blog.slug)}`}
                         className="relative h-52 w-full bg-[#060d0c] overflow-hidden block"
@@ -230,14 +233,16 @@ export default function PostsPage() {
                           <SharePostButton slug={blog.slug} compact />
                         </div>
                       </div>
-                    </article>
+                      </article>
+                    </Reveal>
                   ))}
                 </div>
               )}
             </div>
 
             {/* Clean Sticky Community Sidebar */}
-            <aside className="lg:col-span-3 space-y-5 lg:sticky lg:top-24">
+            <aside className="lg:col-span-3 lg:sticky lg:top-24">
+              <Reveal direction="left" delay={140} immediate className="space-y-5">
               <div className="card bg-[#0b1514] border border-[#122e2a] rounded-2xl p-6 space-y-4">
                 <span className="font-mono text-[11px] uppercase tracking-widest text-[#30c4b6]">
                   Connect With MCPIC
@@ -295,6 +300,7 @@ export default function PostsPage() {
                   </Link>
                 </div>
               </div>
+              </Reveal>
             </aside>
           </div>
         )}

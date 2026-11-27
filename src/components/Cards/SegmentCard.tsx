@@ -9,8 +9,8 @@ export default function SegmentCard({ segment }: { segment: SegmentRecord }) {
       : `${segment.description.slice(0, 80)}...`;
 
   return (
-    <Link href={`/segments/${segment.id}`} className="block h-full">
-      <section className="card bg-[#0c1917] border border-[#122e2a] hover:border-[#30c4b6]/60 shadow-sm h-[24rem] overflow-hidden transition-colors">
+    <Link href={`/segments/${segment.id}`} className="block h-full group">
+      <section className="card bg-[#0c1917] border border-[#122e2a] hover:border-[#30c4b6]/60 shadow-sm hover:shadow-xl hover:shadow-[#30c4b6]/10 h-[24rem] overflow-hidden transition-all duration-300 group-hover:-translate-y-1.5">
         <figure className="relative h-[58%] w-full overflow-hidden">
           <Image
             src={segment.image_url}
@@ -18,7 +18,7 @@ export default function SegmentCard({ segment }: { segment: SegmentRecord }) {
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
             unoptimized={segment.image_url.startsWith("/api/uploads/")}
-            className="object-cover"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </figure>
         <div className="card-body h-[42%] p-5">

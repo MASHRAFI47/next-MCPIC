@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { GoHorizontalRule } from "react-icons/go";
 import Title from "@/components/Title";
+import Reveal from "@/components/Reveal";
 import SegmentCard from "@/components/Cards/SegmentCard";
 import { CardsGridSkeleton } from "@/components/Skeletons";
 import { apiFetch } from "@/lib/api-client";
@@ -50,20 +51,24 @@ export default function EventSegmentsPage() {
             </div>
           ) : (
             <>
-              <div className="flex flex-col gap-3 mb-10">
-                <p className="tags text-[11px] flex items-center font-semibold tracking-widest gap-2">
-                  <GoHorizontalRule className="scale-x-150" /> EVENT SEGMENTS
-                </p>
-                <Title className="uppercase">{data.event.name}</Title>
-                <p className="max-w-2xl text-sm">{data.event.description}</p>
-              </div>
+              <Reveal direction="up" immediate>
+                <div className="flex flex-col gap-3 mb-10">
+                  <p className="tags text-[11px] flex items-center font-semibold tracking-widest gap-2">
+                    <GoHorizontalRule className="scale-x-150" /> EVENT SEGMENTS
+                  </p>
+                  <Title className="uppercase">{data.event.name}</Title>
+                  <p className="max-w-2xl text-sm">{data.event.description}</p>
+                </div>
+              </Reveal>
 
               {data.segments.length === 0 ? (
                 <p className="text-[#89aca8]">No segments uploaded for this event yet.</p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {data.segments.map((segment) => (
-                    <SegmentCard key={segment.id} segment={segment} />
+                  {data.segments.map((segment, idx) => (
+                    <Reveal key={segment.id} direction="up" delay={(idx % 4) * 80} className="h-full">
+                      <SegmentCard segment={segment} />
+                    </Reveal>
                   ))}
                 </div>
               )}

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { GoHorizontalRule } from "react-icons/go";
 import Title from "@/components/Title";
+import Reveal from "@/components/Reveal";
 
 const SOCIALS = [
   { label: "Facebook", href: "https://www.facebook.com/mashrafi.binnur" },
@@ -11,25 +12,28 @@ const SOCIALS = [
 
 export default function DevelopersSection() {
   return (
-    <section className="bg-[#080f0e] py-20 border-y-2 border-[#112927]" data-aos="fade-in">
+    <section className="bg-[#080f0e] py-20 border-y-2 border-[#112927]">
       <div className="container mx-auto px-6 md:px-10 lg:px-4">
-        <div className="flex flex-col gap-3" data-aos="slide-up">
-          <p className="tags text-[11px] pt-2 flex items-center font-semibold tracking-widest gap-2">
-            <GoHorizontalRule className="scale-x-150" /> MEET THE DEVELOPER
-          </p>
-          <Title className="uppercase">DEVELOPER</Title>
-        </div>
+        <Reveal direction="up">
+          <div className="flex flex-col gap-3">
+            <p className="tags text-[11px] pt-2 flex items-center font-semibold tracking-widest gap-2">
+              <GoHorizontalRule className="scale-x-150" /> MEET THE DEVELOPER
+            </p>
+            <Title className="uppercase">DEVELOPER</Title>
+          </div>
+        </Reveal>
 
-        <div className="card card-side flex flex-col lg:flex-row bg-[#0b1514] border border-[#122e2a] shadow-sm mt-10 overflow-hidden">
-          <figure className="relative w-full lg:w-80 shrink-0 h-72 sm:h-96 lg:h-auto overflow-hidden">
-            <Image
-              src="/images/developer/developer.jpg"
-              alt="Mashrafi Bin Nur"
-              fill
-              sizes="(max-width: 1024px) 100vw, 320px"
-              className="object-cover"
-            />
-          </figure>
+        <Reveal direction="up" delay={120}>
+          <div className="group card card-side flex flex-col lg:flex-row bg-[#0b1514] border border-[#122e2a] hover:border-[#30c4b6]/50 shadow-sm hover:shadow-xl hover:shadow-[#30c4b6]/10 mt-10 overflow-hidden transition-all duration-300">
+            <figure className="relative w-full lg:w-80 shrink-0 h-72 sm:h-96 lg:h-auto overflow-hidden">
+              <Image
+                src="/images/developer/developer.jpg"
+                alt="Mashrafi Bin Nur"
+                fill
+                sizes="(max-width: 1024px) 100vw, 320px"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            </figure>
 
           <div className="card-body">
             <span className="bg-[#102220] self-start text-[#2dbeb1] border border-[#17403b] rounded-2xl text-xs px-3 py-1.5 font-mono">
@@ -71,7 +75,7 @@ export default function DevelopersSection() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn btn-sm border-[#10312d] bg-transparent hover:bg-transparent hover:border-[#30c4b6] hover:text-[#30c4b6] text-[#89aca8] rounded-lg"
+                    className="btn btn-sm border-[#10312d] bg-transparent hover:bg-[#0c1d1b] hover:border-[#30c4b6] hover:text-[#30c4b6] hover:-translate-y-0.5 text-[#89aca8] rounded-lg transition-all"
                   >
                     {social.label}
                   </a>
@@ -80,6 +84,7 @@ export default function DevelopersSection() {
             </div>
           </div>
         </div>
+        </Reveal>
       </div>
     </section>
   );

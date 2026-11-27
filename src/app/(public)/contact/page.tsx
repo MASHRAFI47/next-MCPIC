@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { GoHorizontalRule } from "react-icons/go";
 import Title from "@/components/Title";
+import Reveal from "@/components/Reveal";
 import { apiFetch } from "@/lib/api-client";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
@@ -53,7 +54,7 @@ export default function ContactPage() {
   return (
     <section className="px-6 md:px-10 lg:px-4 py-20 hero-grid min-h-screen">
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 items-center gap-12">
-          <div data-aos="fade-right">
+          <Reveal direction="right" immediate>
             <div className="flex flex-col gap-3">
               <p className="tags text-[11px] pt-2 flex items-center font-semibold tracking-widest gap-2">
                 <GoHorizontalRule className="scale-x-150" /> GET IN TOUCH
@@ -71,10 +72,10 @@ export default function ContactPage() {
               </p>
             </div>
             {animationData && <Lottie animationData={animationData} loop className="w-72 mt-4" />}
-          </div>
+          </Reveal>
 
-          <div data-aos="slide-up">
-            <div className="card shrink-0 w-full max-w-xl shadow-2xl bg-[#0b1514] border border-[#102b28] mx-auto">
+          <Reveal direction="up" delay={140} immediate>
+            <div className="card shrink-0 w-full max-w-xl shadow-2xl bg-[#0b1514] border border-[#102b28] hover:border-[#30c4b6]/40 transition-colors mx-auto">
               <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
                 <h3 className="text-[#e8f5f3] tracking-wider text-2xl">Send a Message</h3>
                 <p className="text-sm mb-2">We typically respond within 24–48 hours.</p>
@@ -138,7 +139,7 @@ export default function ContactPage() {
                 </div>
               </form>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
   );

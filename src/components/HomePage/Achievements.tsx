@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GoHorizontalRule } from "react-icons/go";
 import { FaChevronLeft, FaChevronRight, FaExpandAlt, FaTrophy, FaTimes } from "react-icons/fa";
 import Title from "@/components/Title";
+import Reveal from "@/components/Reveal";
 import { apiFetch } from "@/lib/api-client";
 import type { AchievementRecord } from "@/types/models";
 
@@ -105,40 +106,49 @@ export default function Achievements() {
     <section className="bg-gradient-radial from-[#080f0e] via-[#0b1514] to-[#080f0e] border-y-2 border-[#112927] py-20">
       <div className="container mx-auto px-6 md:px-10 lg:px-4">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="flex flex-col gap-3">
-            <p className="tags text-[11px] pt-2 flex items-center font-semibold tracking-widest gap-2">
-              <GoHorizontalRule className="scale-x-150" /> BRILLIANT MINDS
-            </p>
-            <Title>ACHIEVEMENTS</Title>
-            <p className="text-[0.95rem] max-w-xl">
-              Moments of excellence — awards, fests, and milestones earned by MCPIC members across
-              institutions.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 self-start md:self-auto bg-[#0c1917] border border-[#17403b] rounded-2xl px-5 py-3">
-            <FaTrophy className="text-[#30c4b6] shrink-0" size={20} />
-            <div>
-              <span className="font-mono text-xs text-[#30c4b6] block tracking-widest">
-                HALL OF FAME
-              </span>
-              <span className="text-sm text-[#e8f5f3] font-semibold">
-                {items.length} Featured Highlights
-              </span>
+          <Reveal direction="up">
+            <div className="flex flex-col gap-3">
+              <p className="tags text-[11px] pt-2 flex items-center font-semibold tracking-widest gap-2">
+                <GoHorizontalRule className="scale-x-150" /> BRILLIANT MINDS
+              </p>
+              <Title>ACHIEVEMENTS</Title>
+              <p className="text-[0.95rem] max-w-xl">
+                Moments of excellence — awards, fests, and milestones earned by MCPIC members across
+                institutions.
+              </p>
             </div>
-          </div>
+          </Reveal>
+
+          <Reveal direction="left" delay={120}>
+            <div className="flex items-center gap-3 self-start md:self-auto bg-[#0c1917] border border-[#17403b] rounded-2xl px-5 py-3 shadow-lg shadow-[#30c4b6]/5">
+              <FaTrophy className="text-[#30c4b6] shrink-0" size={20} />
+              <div>
+                <span className="font-mono text-xs text-[#30c4b6] block tracking-widest">
+                  HALL OF FAME
+                </span>
+                <span className="text-sm text-[#e8f5f3] font-semibold">
+                  {items.length} Featured Highlights
+                </span>
+              </div>
+            </div>
+          </Reveal>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-5">
           {items.map((item, idx) => {
             const { span, height } = getBentoClasses(idx, items.length);
             return (
-              <button
+              <Reveal
                 key={item.id}
-                type="button"
-                onClick={() => setActiveIndex(idx)}
-                className={`group relative overflow-hidden rounded-2xl border border-[#122e2a] hover:border-[#30c4b6]/70 bg-[#0c1917] text-left transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#30c4b6] ${span} ${height}`}
+                direction="zoom"
+                delay={(idx % 4) * 80}
+                className={span}
               >
+                <button
+                  type="button"
+                  onClick={() => setActiveIndex(idx)}
+                  className={`group relative w-full overflow-hidden rounded-2xl border border-[#122e2a] hover:border-[#30c4b6]/70 bg-[#0c1917] text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#30c4b6]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30c4b6] ${height}`}
+                >
                 <Image
                   src={item.src}
                   alt={item.title}
@@ -168,7 +178,8 @@ export default function Achievements() {
                     {item.title}
                   </h3>
                 </div>
-              </button>
+                </button>
+              </Reveal>
             );
           })}
         </div>
@@ -183,7 +194,7 @@ export default function Achievements() {
           onClick={closeModal}
         >
           <div
-            className="relative w-full max-w-4xl bg-[#0b1514] border border-[#17403b] rounded-2xl overflow-hidden shadow-2xl"
+            className="animate-modal-in relative w-full max-w-4xl bg-[#0b1514] border border-[#17403b] rounded-2xl overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-5 py-3 border-b border-[#122e2a]">

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { GoHorizontalRule } from "react-icons/go";
 import Title from "@/components/Title";
+import Reveal from "@/components/Reveal";
 import { CardsGridSkeleton } from "@/components/Skeletons";
 import { EXECUTIVE_PANELS, type ExecutivePanel } from "@/data/executives";
 import { apiFetch } from "@/lib/api-client";
@@ -46,17 +47,19 @@ export default function ExecutivesPage() {
   return (
     <section className="py-12 px-6 md:px-10 lg:px-4 hero-grid min-h-screen">
       <div className="container mx-auto">
-        <div className="flex flex-col gap-3">
-          <p className="tags text-[11px] pt-2 flex items-center font-semibold tracking-widest gap-2">
-            <GoHorizontalRule className="scale-x-150" /> THE TEAM
-          </p>
-          <Title className="uppercase">
-            EXECUTIVE <br /> COMMITTEE
-          </Title>
-          <p className="text-[0.95rem] mt-2 mb-8">
-            Meet the driven individuals leading MCPIC forward.
-          </p>
-        </div>
+        <Reveal direction="up" immediate>
+          <div className="flex flex-col gap-3">
+            <p className="tags text-[11px] pt-2 flex items-center font-semibold tracking-widest gap-2">
+              <GoHorizontalRule className="scale-x-150" /> THE TEAM
+            </p>
+            <Title className="uppercase">
+              EXECUTIVE <br /> COMMITTEE
+            </Title>
+            <p className="text-[0.95rem] mt-2 mb-8">
+              Meet the driven individuals leading MCPIC forward.
+            </p>
+          </div>
+        </Reveal>
 
         {isLoading ? (
           <CardsGridSkeleton count={6} cols="lg:grid-cols-6" />
@@ -89,29 +92,37 @@ export default function ExecutivesPage() {
             </div>
 
             {currentPanel && (
-              <div className="mt-10 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 items-stretch">
-                {currentPanel.members.map((member) => (
-                  <div
-                    key={member.id}
-                    className="card bg-[#0b1514] border border-[#122e2a] shadow-sm h-full overflow-hidden"
+              <div
+                key={activeYear}
+                className="mt-10 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 items-stretch"
+              >
+                {currentPanel.members.map((member, idx) => (
+                  <Reveal
+                    key={`${activeYear}-${member.id}`}
+                    direction="up"
+                    delay={(idx % 6) * 55}
+                    duration={500}
+                    className="h-full"
                   >
-                    <figure className="relative h-48 w-full overflow-hidden">
-                      <Image
-                        src={member.image}
-                        alt={member.name}
-                        fill
-                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 17vw"
-                        unoptimized={member.image.startsWith("/api/uploads/")}
-                        className="object-cover"
-                      />
-                    </figure>
-                    <div className="card-body p-4 text-center">
-                      <h2 className="text-lg text-[#e8f5f3] tracking-wide leading-tight">
-                        {member.name}
-                      </h2>
-                      <p className="text-[#30c4b6] text-xs">{member.post}</p>
+                    <div className="group card bg-[#0b1514] border border-[#122e2a] hover:border-[#30c4b6]/60 shadow-sm hover:shadow-xl hover:shadow-[#30c4b6]/10 h-full overflow-hidden transition-all duration-300 hover:-translate-y-1">
+                      <figure className="relative h-48 w-full overflow-hidden">
+                        <Image
+                          src={member.image}
+                          alt={member.name}
+                          fill
+                          sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 17vw"
+                          unoptimized={member.image.startsWith("/api/uploads/")}
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </figure>
+                      <div className="card-body p-4 text-center">
+                        <h2 className="text-lg text-[#e8f5f3] tracking-wide leading-tight">
+                          {member.name}
+                        </h2>
+                        <p className="text-[#30c4b6] text-xs">{member.post}</p>
+                      </div>
                     </div>
-                  </div>
+                  </Reveal>
                 ))}
               </div>
             )}
